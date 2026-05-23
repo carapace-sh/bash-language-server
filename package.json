@@ -14,7 +14,7 @@
     "verify:bail": "bun run lint:bail && bun run compile && bun run test:coverage",
     "reinstall-server": "npm uninstall -g bash-language-server && bun run compile && npm i -g ./server",
     "link-server": "npm uninstall -g bash-language-server && bun run compile && bun run unlink --dir=vscode-client bash-language-server && cd server && npm link . && cd ../vscode-client && npm link bash-language-server",
-    "postinstall": "bun install --cwd vscode-client"
+    "postinstall": "bun install --cwd server && bun install --cwd vscode-client"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
