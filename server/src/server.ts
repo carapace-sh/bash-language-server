@@ -1,5 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import * as path from 'node:path'
+
+import { GET_OPTIONS_SCRIPT } from './get-options'
 import { isDeepStrictEqual } from 'node:util'
 
 import * as TurndownService from 'turndown'
@@ -991,7 +993,7 @@ function getMarkdownContent(documentation: string, language?: string): LSP.Marku
 }
 
 export function getCommandOptions(name: string, word: string): string[] {
-  const options = spawnSync(path.join(__dirname, './get-options.sh'), [name, word])
+  const options = spawnSync('bash', ['-c', GET_OPTIONS_SCRIPT, '_', name, word])
 
   if (options.status !== 0) {
     return []
