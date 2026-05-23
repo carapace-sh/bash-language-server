@@ -49,7 +49,7 @@ jobs:
           fi
 
       - name: Rename binary
-        run: mv bash-language-server ${{ env.ASSET_NAME }}
+        run: mv server/bash-language-server ${{ env.ASSET_NAME }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
