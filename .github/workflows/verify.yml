@@ -17,17 +17,11 @@ jobs:
       - name: Install shellcheck and shfmt (used for testing)
         run: sudo apt-get install -y shellcheck shfmt
 
-      - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          version: 10
+          cache: true
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          cache: "pnpm"
-          node-version: ${{ matrix.node-version }}
-
-      - run: pnpm install --frozen-lockfile
+      - run: bun install
 
       - name: Verify changes
-        run: pnpm verify:bail
+        run: bun verify:bail
