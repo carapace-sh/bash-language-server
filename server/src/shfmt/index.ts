@@ -1,5 +1,7 @@
 import { spawn } from 'child_process'
-import * as editorconfig from 'editorconfig'
+import { readFileSync, existsSync } from 'fs'
+import { resolve as resolvePath, dirname, join } from 'path'
+import * as EditorConfig from 'tiny-editorconfig'
 import * as LSP from 'vscode-languageserver/node'
 import { DocumentUri, TextDocument, TextEdit } from 'vscode-languageserver-textdocument'
 
@@ -76,7 +78,7 @@ export class Formatter {
       args.push(`--filename=${filepathMatch[1]}`)
 
       if (!lspShfmtConfig?.ignoreEditorconfig) {
-        const editorconfigProperties = await editorconfig.parse(filepath)
+        const editorconfigProperties = await parseEditorConfig(filepath)
         logger.debug(
           `Shfmt: found .editorconfig properties: ${JSON.stringify(
             editorconfigProperties,
@@ -183,4 +185,27 @@ export class Formatter {
 
     return out
   }
+}
+
+async function parseEditorConfig(
+  filepath: string,
+): Promise<Record<string, any>> {
+  let dir = dirname(filepath)
+  while (true) {
+    const configPath = join(dir, '.editorconfig')
+    if (existsSync(configPath)) {
+      const content = readFileSync(configPath, 'utf-8')
+      const parsed = EditorConfig.parse(content)
+      const resolved = EditorConfig.resolve([parsed], filepath)
+      if (resolved.root) {
+        break
+      }
+    }
+    const parent = dirname(dir)
+    if (parent === dir) {
+      break
+    }
+    dir = parent
+  }
+  return {}
 }

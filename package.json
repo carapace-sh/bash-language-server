@@ -62,6 +62,9 @@
         }
       ]
     },
+    "moduleNameMapper": {
+      "^tiny-editorconfig$": "<rootDir>/__mocks__/tiny-editorconfig.js"
+    },
     "testMatch": [
       "<rootDir>/**/__tests__/*.ts"
     ],
