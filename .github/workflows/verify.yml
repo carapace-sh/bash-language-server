@@ -31,10 +31,3 @@ jobs:
 
       - name: Verify changes
         run: pnpm verify:bail
-
-      - name: Publish coverage to codecov.io
-        uses: codecov/codecov-action@v5
-        if: success() && matrix.node-version == '22.x'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./codecov.yml
