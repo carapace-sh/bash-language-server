@@ -607,7 +607,12 @@ export default class BashServer {
 
     if (word) {
       // Filter to only return suffixes of the current word
-      return allCompletions.filter((item) => item.label.startsWith(word))
+      return allCompletions.filter((item) => {
+        if ((item as LSP.CompletionItem & { filterText?: string }).filterText) {
+          return true
+        }
+        return item.label.startsWith(word)
+      })
     }
 
     return allCompletions

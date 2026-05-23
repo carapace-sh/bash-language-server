@@ -333,13 +333,14 @@ describe('server', () => {
             data: {
               type: CompletionItemDataType.Symbol,
             },
+            documentation: expect.any(String),
             kind: expect.any(Number),
             label: '--line-buffered',
             textEdit: {
-              newText: 'buffered',
+              newText: '--line-buffered',
               range: {
                 start: {
-                  character: 12,
+                  character: 5,
                   line: 2,
                 },
                 end: {
