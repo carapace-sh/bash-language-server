@@ -1,6 +1,8 @@
 # Build output
-vscode-client/out
 server/out
+server/tsconfig.tsbuildinfo
+vscode-client/out
+vscode-client/tsconfig.tsbuildinfo
 
 # Linter cache
 coverage/
