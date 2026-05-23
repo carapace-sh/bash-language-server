@@ -58,7 +58,6 @@ jobs:
           cd server
           mkdir -p dist
           mv bash-language-server dist/
-          cp tree-sitter-bash.wasm dist/
           cp out/get-options.sh dist/
           cd dist
           if [ "${{ matrix.platform.os }}" = "windows" ]; then

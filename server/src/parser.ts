@@ -2,6 +2,9 @@ import * as Parser from 'web-tree-sitter'
 
 const _global: any = global
 
+// Embedded tree-sitter-bash.wasm (base64 encoded)
+import { TREE_SITTER_BASH_WASM_BASE64 } from './tree-sitter-bash'
+
 export async function initializeParser(): Promise<Parser> {
   if (_global.fetch) {
     // NOTE: temporary workaround for emscripten node 18 support.
@@ -19,7 +22,13 @@ export async function initializeParser(): Promise<Parser> {
    * To compile and use a new tree-sitter-bash version:
    *    sh scripts/upgrade-tree-sitter.sh
    */
-  const lang = await Parser.Language.load(`${__dirname}/../tree-sitter-bash.wasm`)
+  // Decode base64 to Uint8Array for Language.load
+  const binaryString = atob(TREE_SITTER_BASH_WASM_BASE64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  const lang = await Parser.Language.load(bytes)
 
   parser.setLanguage(lang)
   return parser
