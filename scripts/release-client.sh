@@ -7,9 +7,9 @@ source ./scripts/tag-release.inc
 version=$(cat vscode-client/package.json | jq -r .version)
 tag="vscode-client-${version}"
 
-pnpm clean
-pnpm install
-pnpm verify:bail
+bun run clean
+bun install
+bun run verify:bail
 
 cd vscode-client
 

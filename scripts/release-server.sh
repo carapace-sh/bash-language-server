@@ -7,16 +7,16 @@ source ./scripts/tag-release.inc
 version=$(cat server/package.json | jq -r .version)
 tag="server-${version}"
 
-publishedVersion=$(pnpm info bash-language-server --json | jq -r .\"dist-tags\".latest)
+publishedVersion=$(npm view bash-language-server version)
 
 if [ "$version" = "$publishedVersion" ]; then
     echo "Newest server version is already deployed."
     exit 0
 fi
 
-pnpm clean
-pnpm install
-pnpm verify:bail
+bun run clean
+bun install
+bun run verify:bail
 
 cd server
 npm publish

@@ -15,7 +15,7 @@ convenience - it proxies to the `package.json` files in the `vscode-client` and
 
 This guide presumes you have the following dependencies installed:
 
-- [`pnpm`][pnpm].
+- [`bun`][bun].
 - [`node`][node] (v20 or newer)
 
 ## Initial setup
@@ -23,7 +23,7 @@ This guide presumes you have the following dependencies installed:
 Run the following in the root of the project
 
 ```
-pnpm install
+bun install
 ```
 
 This uses the `postinstall` hook to install the dependencies in each of the
@@ -33,7 +33,7 @@ To make sure that everything is configured correctly run the following command
 to compile both the client and the server once
 
 ```
-pnpm compile
+bun compile
 ```
 
 Now, depending on which part you want to work on follow the relevant section
@@ -43,10 +43,10 @@ below.
 
 To support a good develop workflow we set up [eslint][eslint], [Prettier][prettier] and integration tests using [Jest][jest]:
 
-    pnpm verify  # (runs lint, prettier and tests)
-    pnpm lint
-    pnpm test
-    pnpm test:coverage
+    bun verify  # (runs lint, prettier and tests)
+    bun lint
+    bun test
+    bun test:coverage
 
 ## Working on the client
 
@@ -68,7 +68,7 @@ As the server is embedded into the VS Code client, you can link any server
 changes into the local installation of your VS Code client by running this once:
 
 ```
-pnpm link-server
+bun link-server
 ```
 
 After that follow the steps above to work on the client.
@@ -80,7 +80,7 @@ and install the server globally whenever you've made a change, and then
 reload your vscode window to re-launch the server.
 
 ```
-pnpm reinstall-server
+bun reinstall-server
 ```
 
 If you for some reason cannot get access to logs through the client,
@@ -109,5 +109,5 @@ To analyze the performance of the extension or server using the Chrome inspector
 [jest]: https://facebook.github.io/jest/
 [prettier]: https://prettier.io/
 [eslint]: https://eslint.org/
-[pnpm]: https://pnpm.io/installation
+[bun]: https://bun.sh
 [node]: https://nodejs.org/en/download/

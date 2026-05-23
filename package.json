@@ -2,24 +2,22 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules vscode-client/node_modules server/node_modules",
-    "preinstall": "pnpm only-allow pnpm",
     "compile": "tsc -b && cp server/src/get-options.sh server/out/",
     "watch": "tsc -b -w",
-    "lint": "pnpm lint:bail --fix",
+    "lint": "bun run lint:bail --fix",
     "lint:bail": "eslint . --ext js,ts,tsx --cache",
     "test": "jest --runInBand",
-    "test:coverage": "pnpm run test --coverage",
-    "test:watch": "pnpm run test --watch",
-    "verify": "pnpm lint && pnpm compile && pnpm run test",
-    "verify:bail": "pnpm lint:bail && pnpm compile && pnpm test:coverage",
-    "reinstall-server": "npm uninstall -g bash-language-server && pnpm compile && npm i -g ./server",
-    "link-server": "npm uninstall -g bash-language-server && pnpm compile && pnpm unlink --dir=vscode-client bash-language-server && cd server && pnpm link . && cd ../vscode-client && pnpm link bash-language-server",
-    "postinstall": "pnpm --dir=vscode-client install --ignore-workspace"
+    "test:coverage": "bun run test --coverage",
+    "test:watch": "bun run test --watch",
+    "verify": "bun run lint && bun run compile && bun run test",
+    "verify:bail": "bun run lint:bail && bun run compile && bun run test:coverage",
+    "reinstall-server": "npm uninstall -g bash-language-server && bun run compile && npm i -g ./server",
+    "link-server": "npm uninstall -g bash-language-server && bun run compile && bun run unlink --dir=vscode-client bash-language-server && cd server && npm link . && cd ../vscode-client && npm link bash-language-server",
+    "postinstall": "bun install --cwd vscode-client"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
     "@types/node": "22.15.29",
-    "only-allow": "^1.2.2",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "cross-spawn": ">=7.0.5",
@@ -40,8 +38,7 @@
     "@types/vscode": "1.106.1"
   },
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=10"
+    "node": ">=20"
   },
   "jest": {
     "preset": "ts-jest",
@@ -78,5 +75,8 @@
       "lcov",
       "html"
     ]
-  }
+  },
+  "workspaces": [
+    "server"
+  ]
 }
