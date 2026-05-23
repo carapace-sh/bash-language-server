@@ -21,7 +21,17 @@ export async function initializeParser(): Promise<Parser> {
   }
 
   await Parser.init({
-    wasmBinary: bytes,
+    instantiateWasm: async (
+      imports: WebAssembly.Imports,
+      receiveInstance: (instance: WebAssembly.Instance, module?: WebAssembly.Module) => void
+    ) => {
+      const instance = new WebAssembly.Instance(
+        new WebAssembly.Module(bytes),
+        imports
+      )
+      receiveInstance(instance)
+      return instance.exports
+    },
   })
   const parser = new Parser()
 
