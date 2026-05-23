@@ -146,7 +146,7 @@ describe('CarapaceProvider', () => {
       expect(items[0].textEdit).toBeUndefined()
     })
 
-    it('does not create text edit when current word is empty', () => {
+    it('creates text edit when current word is empty', () => {
       const provider = new CarapaceProvider({ executablePath: 'carapace' })
       const params = {
         textDocument: { uri: 'file:///test.sh' },
@@ -164,7 +164,12 @@ describe('CarapaceProvider', () => {
         params,
       )
 
-      expect(items[0].textEdit).toBeUndefined()
+      expect(items[0].textEdit).toBeDefined()
+      const textEdit = items[0].textEdit as LSP.TextEdit
+      expect(textEdit.newText).toBe('--help')
+      // Empty range at cursor position
+      expect(textEdit.range.start.character).toBe(0)
+      expect(textEdit.range.end.character).toBe(0)
     })
 
     it('uses display as label when display differs from value', () => {

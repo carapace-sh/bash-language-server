@@ -115,6 +115,21 @@ export class CarapaceProvider {
         }
       } else if (hasDisplay) {
         item.insertText = completion.value
+      } else if (currentWord === '') {
+        // Empty word case - insert at cursor position for LSP clients that need textEdit
+        item.textEdit = {
+          newText: completion.value,
+          range: {
+            start: {
+              character: params.position.character,
+              line: params.position.line,
+            },
+            end: {
+              character: params.position.character,
+              line: params.position.line,
+            },
+          },
+        }
       }
 
       return item
