@@ -13,7 +13,16 @@ export async function initializeParser(): Promise<Parser> {
     delete _global.fetch
   }
 
-  await Parser.init()
+  // Decode base64 to Uint8Array for Language.load
+  const binaryString = atob(TREE_SITTER_BASH_WASM_BASE64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+
+  await Parser.init({
+    wasmBinary: bytes,
+  })
   const parser = new Parser()
 
   /**
@@ -22,12 +31,6 @@ export async function initializeParser(): Promise<Parser> {
    * To compile and use a new tree-sitter-bash version:
    *    sh scripts/upgrade-tree-sitter.sh
    */
-  // Decode base64 to Uint8Array for Language.load
-  const binaryString = atob(TREE_SITTER_BASH_WASM_BASE64)
-  const bytes = new Uint8Array(binaryString.length)
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i)
-  }
   const lang = await Parser.Language.load(bytes)
 
   parser.setLanguage(lang)
