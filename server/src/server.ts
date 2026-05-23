@@ -599,7 +599,7 @@ export default class BashServer {
 
     const allCompletions = [
       ...(skipGeneralCompletions ? [] : reservedWordsCompletions),
-      ...symbolCompletions,
+      ...(skipGeneralCompletions ? [] : symbolCompletions),
       ...(skipGeneralCompletions ? [] : programCompletions),
       ...(skipGeneralCompletions ? [] : builtinsCompletions),
       ...optionsCompletions,
