@@ -462,6 +462,38 @@ describe('commandContextAtPoint', () => {
     expect(curlContext).not.toBeNull()
     expect(curlContext!.commandName).toBe('curl')
   })
+
+  it('returns arguments before the cursor', async () => {
+    const analyzer = await getAnalyzer({})
+    analyzer.analyze({ uri: CURRENT_URI, document: FIXTURE_DOCUMENT.INSTALL })
+
+    // On line 21 (0-based: 20): curl -f -L -s https://www.npmjs.org/install.sh > npm-install-$$.sh
+    // Cursor after "-s" (before the URL argument)
+    const context = analyzer.commandContextAtPoint(CURRENT_URI, 20, 16)
+    expect(context).not.toBeNull()
+    expect(context!.commandName).toBe('curl')
+    expect(context!.args).toContain('-f')
+    expect(context!.args).toContain('-L')
+  })
+
+  it('returns null when not inside a command', async () => {
+    const analyzer = await getAnalyzer({})
+    analyzer.analyze({ uri: CURRENT_URI, document: FIXTURE_DOCUMENT.INSTALL })
+
+    // Line 1 (0-based: 0) is the shebang line, not a command
+    expect(analyzer.commandContextAtPoint(CURRENT_URI, 0, 0)).toBeNull()
+  })
+
+  it('handles cursor on argument word', async () => {
+    const analyzer = await getAnalyzer({})
+    analyzer.analyze({ uri: CURRENT_URI, document: FIXTURE_DOCUMENT.INSTALL })
+
+    // On line 21 (0-based: 20): curl -f -L -s https://www.npmjs.org/install.sh
+    // Position at the "-f" flag (column 7, 0-based)
+    const context = analyzer.commandContextAtPoint(CURRENT_URI, 20, 7)
+    expect(context).not.toBeNull()
+    expect(context!.commandName).toBe('curl')
+  })
 })
 
 describe('findDeclarationsMatchingWord', () => {

@@ -580,10 +580,10 @@ export default class BashServer {
             type: CompletionItemDataType.Symbol,
           },
           textEdit: {
-            newText: option.slice(word.length),
+            newText: option,
             range: {
               start: {
-                character: params.position.character,
+                character: params.position.character - word.length,
                 line: params.position.line,
               },
               end: {

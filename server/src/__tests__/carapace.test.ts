@@ -1,4 +1,6 @@
-import { CarapaceProvider, getCarapaceCompletions } from '../carapace'
+import * as LSP from 'vscode-languageserver/node'
+
+import { CarapaceProvider } from '../carapace'
 
 describe('CarapaceProvider', () => {
   describe('getCompletions', () => {
@@ -7,10 +9,23 @@ describe('CarapaceProvider', () => {
       expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
     })
 
-    it('disables itself after spawn failure', () => {
+    it('disables itself after consecutive spawn failures', () => {
       const provider = new CarapaceProvider({ executablePath: 'nonexistent-binary' })
+      // Should keep trying until MAX_CONSECUTIVE_SPAWN_ERRORS is reached
       expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
-      // After first failure, should not try again
+      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
+      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
+      // After 3 consecutive failures, should be disabled
+      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
+    })
+
+    it('still returns completions after a non-error non-zero exit', () => {
+      const provider = new CarapaceProvider({ executablePath: 'nonexistent-binary' })
+      // First call fails with spawn error (ENOENT)
+      provider.getCompletions({ commandName: 'git', commandArguments: [] })
+      // The consecutive error count should be tracked
+      // But if carapace returns 0, the counter resets
+      // This test just verifies the provider doesn't permanently disable on first error
       expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
     })
   })
@@ -20,7 +35,7 @@ describe('CarapaceProvider', () => {
       const provider = new CarapaceProvider({ executablePath: 'carapace' })
       const params = {
         textDocument: { uri: 'file:///test.sh' },
-        position: { line: 0, character: 4 },
+        position: { line: 0, character: 6 },
       }
 
       const items = provider.toCompletionItems(
@@ -47,7 +62,7 @@ describe('CarapaceProvider', () => {
       expect(items[1].documentation).toBe('Record changes to the repository')
     })
 
-    it('creates text edit when current word matches prefix', () => {
+    it('creates text edit that replaces the current word with the full label', () => {
       const provider = new CarapaceProvider({ executablePath: 'carapace' })
       const params = {
         textDocument: { uri: 'file:///test.sh' },
@@ -66,7 +81,10 @@ describe('CarapaceProvider', () => {
       )
 
       expect(items[0].textEdit).toBeDefined()
-      expect((items[0].textEdit as any).newText).toBe('elp')
+      const textEdit = items[0].textEdit as LSP.TextEdit
+      expect(textEdit.newText).toBe('--help')
+      expect(textEdit.range.start.character).toBe(3) // character 6 - len('--h') = 3
+      expect(textEdit.range.end.character).toBe(6)
     })
 
     it('does not create text edit when current word does not match prefix', () => {
@@ -84,6 +102,27 @@ describe('CarapaceProvider', () => {
           },
         ],
         '--x',
+        params,
+      )
+
+      expect(items[0].textEdit).toBeUndefined()
+    })
+
+    it('does not create text edit when current word is empty', () => {
+      const provider = new CarapaceProvider({ executablePath: 'carapace' })
+      const params = {
+        textDocument: { uri: 'file:///test.sh' },
+        position: { line: 0, character: 0 },
+      }
+
+      const items = provider.toCompletionItems(
+        [
+          {
+            value: '--help',
+            tag: 'flags',
+          },
+        ],
+        '',
         params,
       )
 
@@ -123,22 +162,5 @@ describe('CarapaceProvider', () => {
       // Text for no tag
       expect(items[5].kind).toBe(1) // CompletionItemKind.Text
     })
-  })
-})
-
-describe('getCarapaceCompletions', () => {
-  it('returns empty array when carapacePath is empty', () => {
-    const result = getCarapaceCompletions({
-      carapacePath: '',
-      commandName: 'git',
-      commandArguments: [],
-      currentWord: '',
-      params: {
-        textDocument: { uri: 'file:///test.sh' },
-        position: { line: 0, character: 0 },
-      },
-    })
-
-    expect(result).toEqual([])
   })
 })

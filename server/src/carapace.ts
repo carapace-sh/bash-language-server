@@ -18,13 +18,11 @@ export interface CarapaceResponse {
   nospace: string
 }
 
-export interface CarapaceConfig {
-  path: string
-}
+const MAX_CONSECUTIVE_SPAWN_ERRORS = 3
 
 export class CarapaceProvider {
   private executablePath: string
-  private canComplete = true
+  private consecutiveSpawnErrors = 0
 
   constructor({ executablePath }: { executablePath: string }) {
     this.executablePath = executablePath
@@ -37,7 +35,7 @@ export class CarapaceProvider {
     commandName: string
     commandArguments: string[]
   }): CarapaceCompletion[] {
-    if (!this.canComplete || !this.executablePath) {
+    if (!this.executablePath || this.consecutiveSpawnErrors >= MAX_CONSECUTIVE_SPAWN_ERRORS) {
       return []
     }
 
@@ -52,13 +50,15 @@ export class CarapaceProvider {
 
       if (result.status !== 0) {
         if (result.error) {
+          this.consecutiveSpawnErrors++
           logger.debug(
-            `CarapaceProvider: executable not found or failed, disabling: ${result.error.message}`,
+            `CarapaceProvider: spawn failed (${this.consecutiveSpawnErrors}/${MAX_CONSECUTIVE_SPAWN_ERRORS}): ${result.error.message}`,
           )
-          this.canComplete = false
         }
         return []
       }
+
+      this.consecutiveSpawnErrors = 0
 
       const stdout = result.stdout.toString().trim()
       if (!stdout) {
@@ -97,10 +97,10 @@ export class CarapaceProvider {
 
       if (currentWord && label.startsWith(currentWord)) {
         item.textEdit = {
-          newText: label.slice(currentWord.length),
+          newText: label,
           range: {
             start: {
-              character: params.position.character,
+              character: params.position.character - currentWord.length,
               line: params.position.line,
             },
             end: {
@@ -140,26 +140,4 @@ function carapaceTagToCompletionKind(tag?: string): LSP.CompletionItemKind {
   }
 
   return LSP.CompletionItemKind.Text
-}
-
-export function getCarapaceCompletions({
-  carapacePath,
-  commandName,
-  commandArguments,
-  currentWord,
-  params,
-}: {
-  carapacePath: string
-  commandName: string
-  commandArguments: string[]
-  currentWord: string
-  params: LSP.TextDocumentPositionParams
-}): LSP.CompletionItem[] {
-  if (!carapacePath) {
-    return []
-  }
-
-  const provider = new CarapaceProvider({ executablePath: carapacePath })
-  const completions = provider.getCompletions({ commandName, commandArguments })
-  return provider.toCompletionItems(completions, currentWord, params)
 }

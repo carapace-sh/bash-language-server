@@ -733,8 +733,12 @@ export default class Analyzer {
         continue
       }
 
-      // Skip newlines and other non-argument nodes
-      if (child.type === 'newline' || child.type === 'comment') {
+      // Skip non-argument nodes (newlines, comments, line continuations)
+      if (
+        child.type === 'newline' ||
+        child.type === 'comment' ||
+        child.type === 'line_continuation'
+      ) {
         continue
       }
 
@@ -744,15 +748,23 @@ export default class Analyzer {
       }
 
       // For the node containing the cursor, use the text up to the cursor
-      if (
-        child.startPosition.row === cursorPosition.row &&
-        child.endPosition.row === cursorPosition.row &&
-        child.startPosition.column < cursorPosition.column &&
-        child.endPosition.column >= cursorPosition.column
-      ) {
+      const nodeStartsBeforeCursor =
+        child.startPosition.row < cursorPosition.row ||
+        (child.startPosition.row === cursorPosition.row &&
+          child.startPosition.column < cursorPosition.column)
+      const nodeEndsAtOrAfterCursor =
+        child.endPosition.row > cursorPosition.row ||
+        (child.endPosition.row === cursorPosition.row &&
+          child.endPosition.column >= cursorPosition.column)
+
+      if (nodeStartsBeforeCursor && nodeEndsAtOrAfterCursor) {
         // Node contains cursor - use text up to cursor position
-        const offsetInNode = cursorPosition.column - child.startPosition.column
-        const partialText = child.text.substring(0, offsetInNode)
+        const offsetInNode =
+          (cursorPosition.row - child.startPosition.row) *
+            (child.endPosition.column > 0 ? child.endPosition.column : 0) +
+          cursorPosition.column -
+          child.startPosition.column
+        const partialText = child.text.substring(0, Math.min(offsetInNode, child.text.length))
         if (partialText) {
           args.push(partialText)
         }
