@@ -80,7 +80,8 @@ export class CarapaceProvider {
     params: LSP.TextDocumentPositionParams,
   ): LSP.CompletionItem[] {
     return completions.map((completion) => {
-      const label = completion.value
+      const hasDisplay = completion.display && completion.display !== completion.value
+      const label = hasDisplay ? completion.display! : completion.value
       const item: LSP.CompletionItem = {
         label,
         kind: carapaceTagToCompletionKind(completion.tag),
@@ -91,13 +92,13 @@ export class CarapaceProvider {
         item.documentation = completion.description
       }
 
-      if (completion.display && completion.display !== completion.value) {
-        item.detail = completion.display
+      if (hasDisplay) {
+        item.filterText = completion.value
       }
 
-      if (currentWord && label.startsWith(currentWord)) {
+      if (currentWord && completion.value.startsWith(currentWord)) {
         item.textEdit = {
-          newText: label,
+          newText: completion.value,
           range: {
             start: {
               character: params.position.character - currentWord.length,
@@ -109,6 +110,8 @@ export class CarapaceProvider {
             },
           },
         }
+      } else if (hasDisplay) {
+        item.insertText = completion.value
       }
 
       return item

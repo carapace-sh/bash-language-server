@@ -129,6 +129,71 @@ describe('CarapaceProvider', () => {
       expect(items[0].textEdit).toBeUndefined()
     })
 
+    it('uses display as label when display differs from value', () => {
+      const provider = new CarapaceProvider({ executablePath: 'carapace' })
+      const params = {
+        textDocument: { uri: 'file:///test.sh' },
+        position: { line: 0, character: 0 },
+      }
+
+      const items = provider.toCompletionItems(
+        [
+          {
+            value: '--verbose',
+            display: '-v',
+            description: 'Verbose output',
+            tag: 'shorthand flags',
+          },
+          {
+            value: '--help',
+            description: 'Show help',
+            tag: 'longhand flags',
+          },
+        ],
+        '',
+        params,
+      )
+
+      expect(items).toHaveLength(2)
+      // display differs from value: label is display, filterText is value, insertText is value
+      expect(items[0].label).toBe('-v')
+      expect(items[0].filterText).toBe('--verbose')
+      expect(items[0].insertText).toBe('--verbose')
+      expect(items[0].documentation).toBe('Verbose output')
+      // no display: label is value, no filterText or insertText override
+      expect(items[1].label).toBe('--help')
+      expect(items[1].filterText).toBeUndefined()
+      expect(items[1].insertText).toBeUndefined()
+    })
+
+    it('uses value as textEdit newText when display differs from value', () => {
+      const provider = new CarapaceProvider({ executablePath: 'carapace' })
+      const params = {
+        textDocument: { uri: 'file:///test.sh' },
+        position: { line: 0, character: 5 },
+      }
+
+      const items = provider.toCompletionItems(
+        [
+          {
+            value: '--verbose',
+            display: '-v',
+            tag: 'flags',
+          },
+        ],
+        '--v',
+        params,
+      )
+
+      expect(items[0].textEdit).toBeDefined()
+      const textEdit = items[0].textEdit as LSP.TextEdit
+      expect(textEdit.newText).toBe('--verbose')
+      expect(items[0].label).toBe('-v')
+      expect(items[0].filterText).toBe('--verbose')
+      // no insertText when textEdit is present
+      expect(items[0].insertText).toBeUndefined()
+    })
+
     it('maps tags to appropriate completion kinds', () => {
       const provider = new CarapaceProvider({ executablePath: 'carapace' })
       const params = {
