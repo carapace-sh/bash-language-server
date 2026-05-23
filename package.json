@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules vscode-client/node_modules server/node_modules",
-    "preinstall": "npx only-allow pnpm",
+    "preinstall": "pnpm only-allow pnpm",
     "compile": "tsc -b && cp server/src/get-options.sh server/out/",
     "watch": "tsc -b -w",
     "lint": "pnpm lint:bail --fix",
@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/jest": "29.5.14",
     "@types/node": "22.15.29",
+    "only-allow": "^1.2.2",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "cross-spawn": ">=7.0.5",

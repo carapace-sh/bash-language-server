@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - carapace
+    tags:
+      - 'carapace-server-*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform:
+          - os: linux
+            runner: ubuntu-latest
+          - os: macos
+            runner: macos-latest
+          - os: windows
+            runner: windows-latest
+        architecture:
+          - arch: x64
+          - arch: arm64
+
+    runs-on: ${{ matrix.platform.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build:bundle
+
+      - name: Determine output filename
+        run: |
+          if [ "${{ matrix.platform.os }}" = "windows" ]; then
+            echo "ASSET_NAME=bash-language-server-${{ matrix.architecture }}.exe" >> $GITHUB_ENV
+          else
+            echo "ASSET_NAME=bash-language-server-${{ matrix.architecture }}" >> $GITHUB_ENV
+          fi
+
+      - name: Rename binary
+        run: mv bash-language-server ${{ env.ASSET_NAME }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ASSET_NAME }}
+          path: ${{ env.ASSET_NAME }}
+          retention-days: 5
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/carapace-server-')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

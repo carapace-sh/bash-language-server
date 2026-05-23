@@ -2,9 +2,9 @@ name: "CodeQL Code Scanning"
 
 on:
   push:
-    branches: [main]
+    branches: [carapace]
   pull_request:
-    branches: [main]
+    branches: [carapace]
   schedule:
     - cron: '0 0 * * MON' # every Monday
 
