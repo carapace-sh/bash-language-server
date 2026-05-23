@@ -47,4 +47,4 @@ then
 fi
 
 printf "%s\\t" "\${COMPREPLY[@]}"
-`;
+`

@@ -35,7 +35,10 @@ export class CarapaceProvider {
     commandName: string
     commandArguments: string[]
   }): CarapaceCompletion[] {
-    if (!this.executablePath || this.consecutiveSpawnErrors >= MAX_CONSECUTIVE_SPAWN_ERRORS) {
+    if (
+      !this.executablePath ||
+      this.consecutiveSpawnErrors >= MAX_CONSECUTIVE_SPAWN_ERRORS
+    ) {
       return []
     }
 
@@ -135,7 +138,11 @@ function carapaceTagToCompletionKind(tag?: string): LSP.CompletionItemKind {
   if (lowerTag.includes('command') || lowerTag.includes('subcommand')) {
     return LSP.CompletionItemKind.Module
   }
-  if (lowerTag.includes('file') || lowerTag.includes('directory') || lowerTag.includes('path')) {
+  if (
+    lowerTag.includes('file') ||
+    lowerTag.includes('directory') ||
+    lowerTag.includes('path')
+  ) {
     return LSP.CompletionItemKind.File
   }
   if (lowerTag.includes('variable') || lowerTag.includes('env')) {

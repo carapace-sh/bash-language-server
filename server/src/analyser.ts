@@ -764,7 +764,10 @@ export default class Analyzer {
             (child.endPosition.column > 0 ? child.endPosition.column : 0) +
           cursorPosition.column -
           child.startPosition.column
-        const partialText = child.text.substring(0, Math.min(offsetInNode, child.text.length))
+        const partialText = child.text.substring(
+          0,
+          Math.min(offsetInNode, child.text.length),
+        )
         if (partialText) {
           args.push(partialText)
         }

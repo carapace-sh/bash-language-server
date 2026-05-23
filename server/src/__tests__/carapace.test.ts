@@ -6,17 +6,27 @@ describe('CarapaceProvider', () => {
   describe('getCompletions', () => {
     it('returns empty array when executable path is empty', () => {
       const provider = new CarapaceProvider({ executablePath: '' })
-      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
+      expect(
+        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+      ).toEqual([])
     })
 
     it('disables itself after consecutive spawn failures', () => {
       const provider = new CarapaceProvider({ executablePath: 'nonexistent-binary' })
       // Should keep trying until MAX_CONSECUTIVE_SPAWN_ERRORS is reached
-      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
-      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
-      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
+      expect(
+        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+      ).toEqual([])
+      expect(
+        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+      ).toEqual([])
+      expect(
+        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+      ).toEqual([])
       // After 3 consecutive failures, should be disabled
-      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
+      expect(
+        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+      ).toEqual([])
     })
 
     it('still returns completions after a non-error non-zero exit', () => {
@@ -26,7 +36,9 @@ describe('CarapaceProvider', () => {
       // The consecutive error count should be tracked
       // But if carapace returns 0, the counter resets
       // This test just verifies the provider doesn't permanently disable on first error
-      expect(provider.getCompletions({ commandName: 'git', commandArguments: [] })).toEqual([])
+      expect(
+        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+      ).toEqual([])
     })
   })
 

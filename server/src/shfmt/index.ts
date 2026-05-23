@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
-import { readFileSync, existsSync } from 'fs'
-import { resolve as resolvePath, dirname, join } from 'path'
+import { existsSync, readFileSync } from 'fs'
+import { dirname, join, resolve as resolvePath } from 'path'
 import * as EditorConfig from 'tiny-editorconfig'
 import * as LSP from 'vscode-languageserver/node'
 import { DocumentUri, TextDocument, TextEdit } from 'vscode-languageserver-textdocument'
@@ -187,9 +187,7 @@ export class Formatter {
   }
 }
 
-async function parseEditorConfig(
-  filepath: string,
-): Promise<Record<string, any>> {
+async function parseEditorConfig(filepath: string): Promise<Record<string, any>> {
   let dir = dirname(filepath)
   while (true) {
     const configPath = join(dir, '.editorconfig')

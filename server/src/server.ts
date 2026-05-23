@@ -1,7 +1,5 @@
 import { spawnSync } from 'node:child_process'
 import * as path from 'node:path'
-
-import { GET_OPTIONS_SCRIPT } from './get-options'
 import { isDeepStrictEqual } from 'node:util'
 
 import * as TurndownService from 'turndown'
@@ -9,10 +7,11 @@ import * as LSP from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 
 import Analyzer from './analyser'
-import { CarapaceProvider } from './carapace'
 import * as Builtins from './builtins'
+import { CarapaceProvider } from './carapace'
 import * as config from './config'
 import Executables from './executables'
+import { GET_OPTIONS_SCRIPT } from './get-options'
 import { initializeParser } from './parser'
 import * as ReservedWords from './reserved-words'
 import { Linter, LintingResult } from './shellcheck'
@@ -297,9 +296,7 @@ export default class BashServer {
 
           const { carapacePath } = this.config
           if (!carapacePath) {
-            logger.info(
-              'Carapace completions are disabled as "carapacePath" was not set',
-            )
+            logger.info('Carapace completions are disabled as "carapacePath" was not set')
             this.carapaceProvider = undefined
           } else {
             this.carapaceProvider = new CarapaceProvider({ executablePath: carapacePath })
@@ -575,26 +572,28 @@ export default class BashServer {
           skipGeneralCompletions = true
         }
       } else if (word?.startsWith('-')) {
-        optionsCompletions = getCommandOptions(commandContext.commandName, word).map((option) => ({
-          label: option,
-          kind: LSP.CompletionItemKind.Constant,
-          data: {
-            type: CompletionItemDataType.Symbol,
-          },
-          textEdit: {
-            newText: option,
-            range: {
-              start: {
-                character: params.position.character - word.length,
-                line: params.position.line,
-              },
-              end: {
-                character: params.position.character,
-                line: params.position.line,
+        optionsCompletions = getCommandOptions(commandContext.commandName, word).map(
+          (option) => ({
+            label: option,
+            kind: LSP.CompletionItemKind.Constant,
+            data: {
+              type: CompletionItemDataType.Symbol,
+            },
+            textEdit: {
+              newText: option,
+              range: {
+                start: {
+                  character: params.position.character - word.length,
+                  line: params.position.line,
+                },
+                end: {
+                  character: params.position.character,
+                  line: params.position.line,
+                },
               },
             },
-          },
-        }))
+          }),
+        )
       }
     }
 
