@@ -7,6 +7,7 @@ import * as LSP from 'vscode-languageserver/node'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 
 import Analyzer from './analyser'
+import { CarapaceProvider } from './carapace'
 import * as Builtins from './builtins'
 import * as config from './config'
 import Executables from './executables'
@@ -37,6 +38,7 @@ export default class BashServer {
   private executables: Executables
   private linter?: Linter
   private formatter?: Formatter
+  private carapaceProvider?: CarapaceProvider
   private workspaceFolder: string | null
   private uriToCodeActions: {
     [uri: string]: LintingResult['codeActions'] | undefined
@@ -291,6 +293,16 @@ export default class BashServer {
             this.formatter = new Formatter({ executablePath: shfmtPath })
           }
 
+          const { carapacePath } = this.config
+          if (!carapacePath) {
+            logger.info(
+              'Carapace completions are disabled as "carapacePath" was not set',
+            )
+            this.carapaceProvider = undefined
+          } else {
+            this.carapaceProvider = new CarapaceProvider({ executablePath: carapacePath })
+          }
+
           this.analyzer.setEnableSourceErrorDiagnostics(
             this.config.enableSourceErrorDiagnostics,
           )
@@ -531,16 +543,37 @@ export default class BashServer {
     }))
 
     let optionsCompletions: BashCompletionItem[] = []
-    if (word?.startsWith('-')) {
-      const commandName = this.analyzer.commandNameAtPoint(
-        params.textDocument.uri,
-        params.position.line,
-        // Go one character back to get completion on the current word
-        Math.max(params.position.character - 1, 0),
-      )
+    let skipGeneralCompletions = false
+    const commandContext = this.analyzer.commandContextAtPoint(
+      params.textDocument.uri,
+      params.position.line,
+      // Go one character back to get completion on the current word
+      Math.max(params.position.character - 1, 0),
+    )
 
-      if (commandName) {
-        optionsCompletions = getCommandOptions(commandName, word).map((option) => ({
+    if (commandContext) {
+      if (this.carapaceProvider) {
+        const completions = this.carapaceProvider.getCompletions({
+          commandName: commandContext.commandName,
+          commandArguments: commandContext.args,
+        })
+        const carapaceItems = this.carapaceProvider.toCompletionItems(
+          completions,
+          word || '',
+          params,
+        )
+
+        if (carapaceItems.length > 0) {
+          optionsCompletions = carapaceItems.map((item) => ({
+            ...item,
+            data: {
+              type: CompletionItemDataType.Symbol,
+            },
+          })) as BashCompletionItem[]
+          skipGeneralCompletions = true
+        }
+      } else if (word?.startsWith('-')) {
+        optionsCompletions = getCommandOptions(commandContext.commandName, word).map((option) => ({
           label: option,
           kind: LSP.CompletionItemKind.Constant,
           data: {
@@ -564,12 +597,12 @@ export default class BashServer {
     }
 
     const allCompletions = [
-      ...reservedWordsCompletions,
+      ...(skipGeneralCompletions ? [] : reservedWordsCompletions),
       ...symbolCompletions,
-      ...programCompletions,
-      ...builtinsCompletions,
+      ...(skipGeneralCompletions ? [] : programCompletions),
+      ...(skipGeneralCompletions ? [] : builtinsCompletions),
       ...optionsCompletions,
-      ...SNIPPETS,
+      ...(skipGeneralCompletions ? [] : SNIPPETS),
     ]
 
     if (word) {

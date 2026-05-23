@@ -1,6 +1,6 @@
 # Bash Language Server
 
-Bash language server that brings an IDE-like experience for bash scripts to most editors. This is based on the [Tree Sitter parser][tree-sitter-bash] and supports [explainshell][explainshell], [shellcheck][shellcheck] and [shfmt][shfmt].
+Bash language server that brings an IDE-like experience for bash scripts to most editors. This is based on the [Tree Sitter parser][tree-sitter-bash] and supports [explainshell][explainshell], [shellcheck][shellcheck], [shfmt][shfmt] and [carapace][carapace].
 
 Documentation around configuration variables can be found in the [config.ts](https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts) file.
 
@@ -33,6 +33,9 @@ file is updated (with debounce time of 500ms).
 If you want your shell scripts to be formatted consistently, you can install [shfmt][shfmt]. If
 `shfmt` is installed then your documents will be formatted whenever you take the 'format document'
 action. In most editors this can be configured to happen automatically when files are saved.
+
+If you want rich command completions (subcommands, options, arguments), you can install [carapace][carapace]. If
+`carapace` is installed, bash-language-server will use it to provide context-aware completions for shell commands.
 
 ### Bash language server
 
@@ -219,6 +222,7 @@ Please see [docs/development-guide][dev-guide] for more information.
 [explainshell]: https://explainshell.com/
 [shellcheck]: https://www.shellcheck.net/
 [shfmt]: https://github.com/mvdan/sh#shfmt
+[carapace]: https://github.com/carapace-sh/carapace-bin
 [languageclient-neovim]: https://github.com/autozimu/LanguageClient-neovim
 [nvim-lspconfig]: https://github.com/neovim/nvim-lspconfig
 [vim-lsp]: https://github.com/prabirshrestha/vim-lsp

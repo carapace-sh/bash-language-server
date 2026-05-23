@@ -46,6 +46,9 @@ export const ConfigSchema = z.object({
   // Controls the executable used for ShellCheck linting information. An empty string will disable linting.
   shellcheckPath: z.string().trim().default('shellcheck'),
 
+  // Controls the executable used for Carapace command completions. An empty string will disable Carapace completions.
+  carapacePath: z.string().trim().default('carapace'),
+
   shfmt: z
     .object({
       // Controls the executable used for Shfmt formatting. An empty string will disable formatting
@@ -94,6 +97,7 @@ export function getConfigFromEnvironmentVariables(): {
     shellcheckArguments: process.env.SHELLCHECK_ARGUMENTS,
     shellcheckExternalSources: toBoolean(process.env.SHELLCHECK_EXTERNAL_SOURCES),
     shellcheckPath: process.env.SHELLCHECK_PATH,
+    carapacePath: process.env.CARAPACE_PATH,
     shfmt: {
       path: process.env.SHFMT_PATH,
       ignoreEditorconfig: toBoolean(process.env.SHFMT_IGNORE_EDITORCONFIG),

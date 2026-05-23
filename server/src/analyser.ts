@@ -670,23 +670,113 @@ export default class Analyzer {
    * Find the name of the command at the given point.
    */
   public commandNameAtPoint(uri: string, line: number, column: number): string | null {
-    let node = this.nodeAtPoint(uri, line, column)
+    const commandNode = this.commandNodeAtPoint(uri, line, column)
 
-    while (node && node.type !== 'command') {
-      node = node.parent
-    }
-
-    if (!node) {
+    if (!commandNode) {
       return null
     }
 
-    const firstChild = node.firstNamedChild
+    const firstChild = commandNode.firstNamedChild
 
     if (!firstChild || firstChild.type !== 'command_name') {
       return null
     }
 
     return firstChild.text.trim()
+  }
+
+  /**
+   * Get the command context at the given point: the command name
+   * and all argument words before the cursor position.
+   * Returns null if the cursor is not within a command.
+   */
+  public commandContextAtPoint(
+    uri: string,
+    line: number,
+    column: number,
+  ): { commandName: string; args: string[] } | null {
+    const commandNode = this.commandNodeAtPoint(uri, line, column)
+
+    if (!commandNode) {
+      return null
+    }
+
+    const firstChild = commandNode.firstNamedChild
+
+    if (!firstChild || firstChild.type !== 'command_name') {
+      return null
+    }
+
+    const commandName = firstChild.text.trim()
+
+    // Collect all sibling nodes after the command_name that start before the cursor
+    const args: string[] = []
+    const cursorPosition = { row: line, column }
+
+    for (let i = 0; i < commandNode.childCount; i++) {
+      const child = commandNode.child(i)
+      if (!child) {
+        continue
+      }
+
+      // Skip the command_name node itself
+      if (child.id === firstChild.id) {
+        continue
+      }
+
+      // Only include nodes that start before the cursor position
+      if (
+        child.startPosition.row > cursorPosition.row ||
+        (child.startPosition.row === cursorPosition.row &&
+          child.startPosition.column >= cursorPosition.column)
+      ) {
+        continue
+      }
+
+      // Skip newlines and other non-argument nodes
+      if (child.type === 'newline' || child.type === 'comment') {
+        continue
+      }
+
+      // Skip empty or whitespace-only nodes
+      if (!child.text.trim()) {
+        continue
+      }
+
+      // For the node containing the cursor, use the text up to the cursor
+      if (
+        child.startPosition.row === cursorPosition.row &&
+        child.endPosition.row === cursorPosition.row &&
+        child.startPosition.column < cursorPosition.column &&
+        child.endPosition.column >= cursorPosition.column
+      ) {
+        // Node contains cursor - use text up to cursor position
+        const offsetInNode = cursorPosition.column - child.startPosition.column
+        const partialText = child.text.substring(0, offsetInNode)
+        if (partialText) {
+          args.push(partialText)
+        }
+      } else {
+        // Node is entirely before the cursor
+        args.push(child.text)
+      }
+    }
+
+    return { commandName, args }
+  }
+
+  private commandNodeAtPoint(
+    uri: string,
+    line: number,
+    column: number,
+  ): Parser.SyntaxNode | null {
+    let node = this.nodeAtPoint(uri, line, column)
+
+    while (node && node.type !== 'command') {
+      node = node.parent
+    }
+
+    return node
   }
 
   /**

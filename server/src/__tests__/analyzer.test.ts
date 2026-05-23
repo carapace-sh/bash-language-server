@@ -449,6 +449,21 @@ describe('commandNameAtPoint', () => {
   })
 })
 
+describe('commandContextAtPoint', () => {
+  it('returns command name and arguments before cursor', async () => {
+    const analyzer = await getAnalyzer({})
+    analyzer.analyze({ uri: CURRENT_URI, document: FIXTURE_DOCUMENT.INSTALL })
+
+    // No command at blank line
+    expect(analyzer.commandContextAtPoint(CURRENT_URI, 15, 0)).toBeNull()
+
+    // curl with no arguments before cursor on the command name
+    const curlContext = analyzer.commandContextAtPoint(CURRENT_URI, 20, 2)
+    expect(curlContext).not.toBeNull()
+    expect(curlContext!.commandName).toBe('curl')
+  })
+})
+
 describe('findDeclarationsMatchingWord', () => {
   it('returns a list of symbols across the workspace when includeAllWorkspaceSymbols is true', async () => {
     const analyzer = await getAnalyzer({
