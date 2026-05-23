@@ -87,7 +87,33 @@ describe('CarapaceProvider', () => {
       expect(textEdit.range.end.character).toBe(6)
     })
 
-    it('does not create text edit when current word does not match prefix', () => {
+    it('creates text edit when display differs from value even if current word does not match value prefix', () => {
+      const provider = new CarapaceProvider({ executablePath: 'carapace' })
+      const params = {
+        textDocument: { uri: 'file:///test.sh' },
+        position: { line: 0, character: 20 },
+      }
+
+      const items = provider.toCompletionItems(
+        [
+          {
+            value: 'bash-lsp/bash-language-server',
+            display: 'bash-language-server',
+            tag: 'repos',
+          },
+        ],
+        'bash-lsp/bas',
+        params,
+      )
+
+      expect(items[0].textEdit).toBeDefined()
+      const textEdit = items[0].textEdit as LSP.TextEdit
+      expect(textEdit.newText).toBe('bash-lsp/bash-language-server')
+      expect(items[0].label).toBe('bash-language-server')
+      expect(items[0].filterText).toBe('bash-lsp/bash-language-server')
+    })
+
+    it('does not create text edit when current word does not match prefix and display equals value', () => {
       const provider = new CarapaceProvider({ executablePath: 'carapace' })
       const params = {
         textDocument: { uri: 'file:///test.sh' },
@@ -192,6 +218,31 @@ describe('CarapaceProvider', () => {
       expect(items[0].filterText).toBe('--verbose')
       // no insertText when textEdit is present
       expect(items[0].insertText).toBeUndefined()
+    })
+
+    it('creates text edit for display!=value even when display does not start with current word', () => {
+      const provider = new CarapaceProvider({ executablePath: 'carapace' })
+      const params = {
+        textDocument: { uri: 'file:///test.sh' },
+        position: { line: 0, character: 5 },
+      }
+
+      const items = provider.toCompletionItems(
+        [
+          {
+            value: '--verbose',
+            display: '-v',
+            tag: 'flags',
+          },
+        ],
+        '--v',
+        params,
+      )
+
+      expect(items[0].textEdit).toBeDefined()
+      const textEdit = items[0].textEdit as LSP.TextEdit
+      expect(textEdit.newText).toBe('--verbose')
+      expect(items[0].label).toBe('-v')
     })
 
     it('maps tags to appropriate completion kinds', () => {

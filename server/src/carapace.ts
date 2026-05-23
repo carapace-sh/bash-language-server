@@ -96,7 +96,7 @@ export class CarapaceProvider {
         item.filterText = completion.value
       }
 
-      if (currentWord && completion.value.startsWith(currentWord)) {
+      if (currentWord && (completion.value.startsWith(currentWord) || hasDisplay)) {
         item.textEdit = {
           newText: completion.value,
           range: {
