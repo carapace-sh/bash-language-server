@@ -2,8 +2,20 @@ import * as Parser from 'web-tree-sitter'
 
 const _global: any = global
 
-// Embedded tree-sitter-bash.wasm (base64 encoded)
+// Embedded tree-sitter.wasm (core runtime, base64 encoded)
+import { TREE_SITTER_WASM_BASE64 } from './tree-sitter'
+
+// Embedded tree-sitter-bash.wasm (language grammar, base64 encoded)
 import { TREE_SITTER_BASH_WASM_BASE64 } from './tree-sitter-bash'
+
+function base64ToBytes(base64: string): Uint8Array {
+  const binaryString = atob(base64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return bytes
+}
 
 export async function initializeParser(): Promise<Parser> {
   if (_global.fetch) {
@@ -13,26 +25,13 @@ export async function initializeParser(): Promise<Parser> {
     delete _global.fetch
   }
 
-  // Decode base64 to Uint8Array for Language.load
-  const binaryString = atob(TREE_SITTER_BASH_WASM_BASE64)
-  const bytes = new Uint8Array(binaryString.length)
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i)
-  }
+  const coreWasmBytes = base64ToBytes(TREE_SITTER_WASM_BASE64)
+  const bashWasmBytes = base64ToBytes(TREE_SITTER_BASH_WASM_BASE64)
 
   await Parser.init({
-    instantiateWasm: async (
-      imports: WebAssembly.Imports,
-      receiveInstance: (instance: WebAssembly.Instance, module?: WebAssembly.Module) => void
-    ) => {
-      const instance = new WebAssembly.Instance(
-        new WebAssembly.Module(bytes),
-        imports
-      )
-      receiveInstance(instance)
-      return instance.exports
-    },
+    wasmBinary: coreWasmBytes,
   })
+
   const parser = new Parser()
 
   /**
@@ -41,7 +40,7 @@ export async function initializeParser(): Promise<Parser> {
    * To compile and use a new tree-sitter-bash version:
    *    sh scripts/upgrade-tree-sitter.sh
    */
-  const lang = await Parser.Language.load(bytes)
+  const lang = await Parser.Language.load(bashWasmBytes)
 
   parser.setLanguage(lang)
   return parser
