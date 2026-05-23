@@ -46,9 +46,9 @@ jobs:
       - name: Determine output filename
         run: |
           if [ "${{ matrix.platform.os }}" = "windows" ]; then
-            echo "ASSET_NAME=bash-language-server-${{ matrix.arch.arch }}.exe" >> $GITHUB_ENV
+            echo "ASSET_NAME=bash-language-server-${{ matrix.architecture.arch }}.exe" >> $GITHUB_ENV
           else
-            echo "ASSET_NAME=bash-language-server-${{ matrix.arch.arch }}" >> $GITHUB_ENV
+            echo "ASSET_NAME=bash-language-server-${{ matrix.architecture.arch }}" >> $GITHUB_ENV
           fi
 
       - name: Upload artifact
