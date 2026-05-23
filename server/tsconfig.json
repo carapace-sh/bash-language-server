@@ -6,7 +6,7 @@
 
     "lib": [
       "dom", // Required by @types/turndown
-      "es2016"
+      "es2022"
     ]
   },
   "include": ["src"],
