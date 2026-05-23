@@ -38,18 +38,18 @@ jobs:
         run: bun run compile
 
       - name: Build
-        run: cd server && bun run build:bundle
+        run: |
+          cd server
+          bun run build:bundle
+          mv bash-language-server ../bash-language-server
 
       - name: Determine output filename
         run: |
           if [ "${{ matrix.platform.os }}" = "windows" ]; then
-            echo "ASSET_NAME=bash-language-server-${{ matrix.architecture }}.exe" >> $GITHUB_ENV
+            echo "ASSET_NAME=bash-language-server-${{ matrix.arch }}.exe" >> $GITHUB_ENV
           else
-            echo "ASSET_NAME=bash-language-server-${{ matrix.architecture }}" >> $GITHUB_ENV
+            echo "ASSET_NAME=bash-language-server-${{ matrix.arch }}" >> $GITHUB_ENV
           fi
-
-      - name: Rename binary
-        run: mv server/bash-language-server ${{ env.ASSET_NAME }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
