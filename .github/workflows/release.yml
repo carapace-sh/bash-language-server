@@ -37,10 +37,8 @@ jobs:
       - name: Compile
         run: bun run compile
 
-      - name: Build
-        run: |
-          cd server
-          bun run build:bundle
+      - name: Build bundle
+        run: bun run build:bundle
 
       - name: Determine output filename
         run: |

@@ -3,6 +3,7 @@
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules vscode-client/node_modules server/node_modules",
     "compile": "tsc -b && cp server/src/get-options.sh server/out/",
+    "build:bundle": "cd server && bun build --compile --target node --outfile bash-language-server out/cli.js",
     "watch": "tsc -b -w",
     "lint": "bun run lint:bail --fix",
     "lint:bail": "eslint . --ext js,ts,tsx --cache",
