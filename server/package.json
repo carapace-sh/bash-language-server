@@ -28,7 +28,8 @@
     "zod": "3.25.76"
   },
   "scripts": {
-    "prepublishOnly": "cd ../ && pnpm compile && cp README.md server/"
+    "prepublishOnly": "cd ../ && pnpm compile && cp README.md server/",
+    "build:bundle": "bun build --compile --target node --outfile bash-language-server out/cli.js"
   },
   "devDependencies": {
     "@types/fuzzy-search": "2.1.5",

@@ -1,4 +1,5 @@
 # Build output
+server/bash-language-server
 server/out
 server/tsconfig.tsbuildinfo
 vscode-client/out
