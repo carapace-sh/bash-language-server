@@ -53,12 +53,27 @@ jobs:
             echo "BINARY_NAME=bash-language-server" >> $GITHUB_ENV
           fi
 
+      - name: Create distribution package
+        run: |
+          cd server
+          mkdir -p dist
+          mv bash-language-server dist/
+          cp tree-sitter-bash.wasm dist/
+          cp out/get-options.sh dist/
+          cd dist
+          if [ "${{ matrix.platform.os }}" = "windows" ]; then
+            powershell -Command "Compress-Archive -Path * -DestinationPath ../bash-language-server-${{ matrix.architecture.arch }}.zip"
+          else
+            tar -czf ../bash-language-server-${{ matrix.architecture.arch }}.tar.gz .
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ASSET_NAME }}
-          path: ${{ env.BINARY_NAME }}
-          retention-days: 5
+          path: |
+            server/bash-language-server-${{ matrix.architecture.arch }}.zip
+            server/bash-language-server-${{ matrix.architecture.arch }}.tar.gz
 
   release:
     needs: build
@@ -71,10 +86,31 @@ jobs:
         with:
           path: artifacts
 
+      - name: Extract archives
+        run: |
+          cd artifacts
+          for dir in */; do
+            if [[ "$dir" =~ \.tar\.gz$ ]]; then
+              continue
+            fi
+            cd "$dir"
+            for archive in *.tar.gz *.zip; do
+              if [ -f "$archive" ]; then
+                if [[ "$archive" == *.tar.gz ]]; then
+                  tar -xzf "$archive"
+                else
+                  unzip -o "$archive"
+                fi
+              fi
+            done
+            cd ..
+          done
+          ls -la */
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/*
+          files: artifacts/bash-language-server-*/*
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
