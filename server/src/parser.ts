@@ -13,15 +13,7 @@ export async function initializeParser(): Promise<Parser> {
     delete _global.fetch
   }
 
-  await Parser.init({
-    locateFile: (file: string) => {
-      if (file.endsWith('.wasm')) {
-        const wasmPath = require.resolve('web-tree-sitter/tree-sitter.wasm')
-        return wasmPath
-      }
-      return file
-    },
-  })
+  await Parser.init()
   const parser = new Parser()
 
   /**
