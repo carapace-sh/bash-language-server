@@ -99,7 +99,16 @@ export class CarapaceProvider {
         item.filterText = completion.value
       }
 
-      if (currentWord && (completion.value.startsWith(currentWord) || hasDisplay)) {
+      // Detect single operator characters (like '=') that tree-sitter parses as separate words
+      // but should not affect completion filtering - bash treats --option= as one word
+      const isSingleOperator =
+        currentWord && currentWord.length === 1 && !/^[a-zA-Z0-9_-]$/.test(currentWord)
+
+      if (
+        currentWord &&
+        !isSingleOperator &&
+        (completion.value.startsWith(currentWord) || hasDisplay)
+      ) {
         item.textEdit = {
           newText: completion.value,
           range: {
@@ -115,8 +124,8 @@ export class CarapaceProvider {
         }
       } else if (hasDisplay) {
         item.insertText = completion.value
-      } else if (currentWord === '') {
-        // Empty word case - insert at cursor position for LSP clients that need textEdit
+      } else if (currentWord === '' || isSingleOperator) {
+        // Empty word or single operator case - insert at cursor position
         item.textEdit = {
           newText: completion.value,
           range: {
