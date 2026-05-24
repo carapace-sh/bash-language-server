@@ -768,12 +768,18 @@ export default class Analyzer {
           0,
           Math.min(offsetInNode, child.text.length),
         )
-        if (partialText) {
-          args.push(partialText)
+        // Strip leading/trailing quotes since they shouldn't be passed to carapace
+        const unquotedText = partialText.replace(/^['"]|['"]$/g, '')
+        if (unquotedText) {
+          args.push(unquotedText)
         }
       } else {
         // Node is entirely before the cursor
-        args.push(child.text)
+        // Strip leading/trailing quotes since they shouldn't be passed to carapace
+        const unquotedText = child.text.replace(/^['"]|['"]$/g, '')
+        if (unquotedText) {
+          args.push(unquotedText)
+        }
       }
     }
 

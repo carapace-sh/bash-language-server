@@ -167,8 +167,9 @@ describe('CarapaceProvider', () => {
       expect(items[0].textEdit).toBeDefined()
       const textEdit = items[0].textEdit as LSP.TextEdit
       expect(textEdit.newText).toBe("'with space'") // should be quoted
-      // Range should start at position 1 (after the quote) and end at position 5
-      expect(textEdit.range.start.character).toBe(1)
+      // Range should cover the entire current word including the quote
+      // start = position (5) - word length (5) = 0
+      expect(textEdit.range.start.character).toBe(0)
       expect(textEdit.range.end.character).toBe(5)
     })
 
