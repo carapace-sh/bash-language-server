@@ -2,9 +2,9 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules server/node_modules",
-    "compile": "tsc -b && cp server/src/get-options.sh server/out/",
+    "compile": "bash scripts/compile.sh",
     "build:bundle": "cd server && bun build --compile --target node --outfile bash-language-server out/cli.js",
-    "watch": "tsc -b -w",
+    "watch": "bash scripts/watch.sh",
     "test": "bun test --isolate",
     "test:coverage": "bun test --isolate --coverage",
     "test:watch": "bun run test --watch",
@@ -19,7 +19,6 @@
     "cross-spawn": ">=7.0.5",
     "jest": "29.7.0",
     "ts-jest": "29.4.5",
-    "typescript": "5.9.3",
     "vscode-languageserver": "8.0.2",
     "vscode-languageserver-textdocument": "1.0.12"
   },
