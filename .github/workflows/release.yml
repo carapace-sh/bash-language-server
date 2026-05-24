@@ -1,11 +1,8 @@
 name: Release
 
 on:
+  pull_request:
   push:
-    branches:
-      - carapace
-    tags:
-      - 'carapace-server-*'
 
 jobs:
   release:
@@ -20,6 +17,16 @@ jobs:
           bun-version: latest
 
       - uses: goreleaser/goreleaser-action@v6
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        with:
+          distribution: goreleaser
+          version: latest
+          args: build --clean --snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: goreleaser/goreleaser-action@v6
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           distribution: goreleaser
           version: latest
