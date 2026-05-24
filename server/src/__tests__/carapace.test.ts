@@ -146,6 +146,32 @@ describe('CarapaceProvider', () => {
       expect(items[0].textEdit).toBeUndefined()
     })
 
+    it('creates text edit when current word starts with quote prefix', () => {
+      const provider = new CarapaceProvider({ executablePath: 'carapace' })
+      const params = {
+        textDocument: { uri: 'file:///test.sh' },
+        position: { line: 0, character: 5 },
+      }
+
+      const items = provider.toCompletionItems(
+        [
+          {
+            value: 'with space', // value without quotes (carapace returns unquoted)
+            tag: 'values',
+          },
+        ],
+        "'with",
+        params,
+      )
+
+      expect(items[0].textEdit).toBeDefined()
+      const textEdit = items[0].textEdit as LSP.TextEdit
+      expect(textEdit.newText).toBe("'with space'") // should be quoted
+      // Range should start at position 1 (after the quote) and end at position 5
+      expect(textEdit.range.start.character).toBe(1)
+      expect(textEdit.range.end.character).toBe(5)
+    })
+
     it('creates text edit when current word is empty', () => {
       const provider = new CarapaceProvider({ executablePath: 'carapace' })
       const params = {

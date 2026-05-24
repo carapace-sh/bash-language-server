@@ -104,15 +104,46 @@ export class CarapaceProvider {
       const isSingleOperator =
         currentWord && currentWord.length === 1 && !/^[a-zA-Z0-9_-]$/.test(currentWord)
 
+      // Handle quoted current word - strip quote prefix for comparison
+      // e.g., when user types "'wit", we want to match completions starting with "wit"
+      const quotePrefix = currentWord && /^['"]/.test(currentWord) ? currentWord[0] : null
+      const unquotedWord = quotePrefix ? currentWord.slice(1) : currentWord
+      const prefixLength = unquotedWord ? unquotedWord.length : 0
+
+      // For comparison, strip quote from completion value if present
+      const completionValue = completion.value
+      const completionStartsWithQuote = /^['"]/.test(completionValue)
+      const valueToCompare = completionStartsWithQuote
+        ? completionValue.slice(1)
+        : completionValue
+
       if (
         currentWord &&
         !isSingleOperator &&
-        (completion.value.startsWith(currentWord) || hasDisplay)
+        (prefixLength > 0
+          ? valueToCompare.startsWith(unquotedWord) || hasDisplay
+          : hasDisplay)
       ) {
+        // Determine the text to insert
+        let textToInsert: string
+        if (quotePrefix && !completionStartsWithQuote) {
+          // User typed quote but completion value doesn't have one
+          // Need to quote the completion value since user's quote is open
+          // e.g., user typed 'wit -> completion is "with space" -> result should be 'with space'
+          textToInsert = quoteShellValue(completion.value)
+        } else if (quotePrefix) {
+          // Both user and completion have quotes, user provided opening quote
+          textToInsert = completion.value
+        } else {
+          // No quote from user, use quoteShellValue to properly quote
+          textToInsert = quoteShellValue(completion.value)
+        }
+
         item.textEdit = {
-          newText: quoteShellValue(completion.value),
+          newText: textToInsert,
           range: {
             start: {
+              // Start position is where the current word starts
               character: params.position.character - currentWord.length,
               line: params.position.line,
             },
