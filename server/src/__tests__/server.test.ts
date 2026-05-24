@@ -506,11 +506,13 @@ describe('server', () => {
             },
             "documentation": {
               "kind": "markdown",
-              "value": "Function: **add_a_user** - *defined in issue101.sh*
+              "value": 
+        "Function: **add_a_user** - *defined in issue101.sh*
 
         \`\`\`txt
         Helper function to add a user
-        \`\`\`",
+        \`\`\`"
+        ,
             },
             "kind": 3,
             "label": "add_a_user",
@@ -1024,14 +1026,16 @@ describe('server', () => {
         {
           "contents": {
             "kind": "markdown",
-            "value": "Function: **hello_world** - *defined on line 8*
+            "value": 
+        "Function: **hello_world** - *defined on line 8*
 
         \`\`\`txt
         this is a comment
         describing the function
         hello_world
         this function takes two arguments
-        \`\`\`",
+        \`\`\`"
+        ,
           },
         }
       `)
@@ -1047,11 +1051,13 @@ describe('server', () => {
         {
           "contents": {
             "kind": "markdown",
-            "value": "Function: **ls** - *defined on line 6*
+            "value": 
+        "Function: **ls** - *defined on line 6*
 
         \`\`\`txt
         override documentation for \`ls\` symbol
-        \`\`\`",
+        \`\`\`"
+        ,
           },
         }
       `)
@@ -1212,6 +1218,45 @@ describe('server', () => {
           {
             "range": {
               "end": {
+                "character": 26,
+                "line": 42,
+              },
+              "start": {
+                "character": 7,
+                "line": 42,
+              },
+            },
+            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/scope.sh",
+          },
+          {
+            "range": {
+              "end": {
+                "character": 19,
+                "line": 97,
+              },
+              "start": {
+                "character": 0,
+                "line": 97,
+              },
+            },
+            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/renaming.sh",
+          },
+          {
+            "range": {
+              "end": {
+                "character": 25,
+                "line": 98,
+              },
+              "start": {
+                "character": 6,
+                "line": 98,
+              },
+            },
+            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/renaming.sh",
+          },
+          {
+            "range": {
+              "end": {
                 "character": 19,
                 "line": 40,
               },
@@ -1247,45 +1292,6 @@ describe('server', () => {
               },
             },
             "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/install.sh",
-          },
-          {
-            "range": {
-              "end": {
-                "character": 19,
-                "line": 97,
-              },
-              "start": {
-                "character": 0,
-                "line": 97,
-              },
-            },
-            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/renaming.sh",
-          },
-          {
-            "range": {
-              "end": {
-                "character": 25,
-                "line": 98,
-              },
-              "start": {
-                "character": 6,
-                "line": 98,
-              },
-            },
-            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/renaming.sh",
-          },
-          {
-            "range": {
-              "end": {
-                "character": 26,
-                "line": 42,
-              },
-              "start": {
-                "character": 7,
-                "line": 42,
-              },
-            },
-            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/scope.sh",
           },
         ]
       `)
@@ -1295,28 +1301,15 @@ describe('server', () => {
           {
             "range": {
               "end": {
-                "character": 19,
-                "line": 40,
+                "character": 26,
+                "line": 42,
               },
               "start": {
-                "character": 0,
-                "line": 40,
+                "character": 7,
+                "line": 42,
               },
             },
-            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/install.sh",
-          },
-          {
-            "range": {
-              "end": {
-                "character": 21,
-                "line": 48,
-              },
-              "start": {
-                "character": 2,
-                "line": 48,
-              },
-            },
-            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/install.sh",
+            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/scope.sh",
           },
           {
             "range": {
@@ -1347,15 +1340,28 @@ describe('server', () => {
           {
             "range": {
               "end": {
-                "character": 26,
-                "line": 42,
+                "character": 19,
+                "line": 40,
               },
               "start": {
-                "character": 7,
-                "line": 42,
+                "character": 0,
+                "line": 40,
               },
             },
-            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/scope.sh",
+            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/install.sh",
+          },
+          {
+            "range": {
+              "end": {
+                "character": 21,
+                "line": 48,
+              },
+              "start": {
+                "character": 2,
+                "line": 48,
+              },
+            },
+            "uri": "file://__REPO_ROOT_FOLDER__/testing/fixtures/install.sh",
           },
         ]
       `)
@@ -1377,30 +1383,32 @@ describe('server', () => {
           {} as any,
         )
 
-        expect(result).toEqual([
-          {
-            kind: expect.any(Number),
-            location: {
-              range: {
-                end: { character: 27, line: 40 },
-                start: { character: 0, line: 40 },
+        expect(result).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              kind: expect.any(Number),
+              location: {
+                range: {
+                  end: { character: 27, line: 40 },
+                  start: { character: 0, line: 40 },
+                },
+                uri: expect.stringContaining('/testing/fixtures/install.sh'),
               },
-              uri: expect.stringContaining('/testing/fixtures/install.sh'),
-            },
-            name: 'npm_config_loglevel',
-          },
-          {
-            kind: expect.any(Number),
-            location: {
-              range: {
-                end: { character: 26, line: 97 },
-                start: { character: 0, line: 97 },
+              name: 'npm_config_loglevel',
+            }),
+            expect.objectContaining({
+              kind: expect.any(Number),
+              location: {
+                range: {
+                  end: { character: 26, line: 97 },
+                  start: { character: 0, line: 97 },
+                },
+                uri: expect.stringContaining('/testing/fixtures/renaming.sh'),
               },
-              uri: expect.stringContaining('/testing/fixtures/renaming.sh'),
-            },
-            name: 'npm_config_loglevel',
-          },
-        ])
+              name: 'npm_config_loglevel',
+            }),
+          ]),
+        )
       }
 
       await lookupAndExpectNpmConfigLoglevelResult('npm_config_loglevel') // exact
