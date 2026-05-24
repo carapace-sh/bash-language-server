@@ -5,8 +5,8 @@ import * as LSP from 'vscode-languageserver/node'
 import BashServer from './server'
 import { DEFAULT_LOG_LEVEL, LOG_LEVEL_ENV_VAR } from './util/logger'
 
-const VERSION = "5.7.0"
-const REPOSITORY_URL = "https://github.com/bash-lsp/bash-language-server"
+const VERSION = process.env.VERSION ?? "0.0.0"
+const REPOSITORY_URL = "https://github.com/carapace-sh/bash-language-server"
 
 const PADDING = 38
 

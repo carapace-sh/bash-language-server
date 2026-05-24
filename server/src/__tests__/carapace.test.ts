@@ -109,20 +109,20 @@ describe('CarapaceProvider', () => {
       const items = provider.toCompletionItems(
         [
           {
-            value: 'bash-lsp/bash-language-server',
+            value: 'carapace-sh/bash-language-server',
             display: 'bash-language-server',
             tag: 'repos',
           },
         ],
-        'bash-lsp/bas',
+        'carapace-sh/bas',
         params,
       )
 
       expect(items[0].textEdit).toBeDefined()
       const textEdit = items[0].textEdit as LSP.TextEdit
-      expect(textEdit.newText).toBe('bash-lsp/bash-language-server')
+      expect(textEdit.newText).toBe('carapace-sh/bash-language-server')
       expect(items[0].label).toBe('bash-language-server')
-      expect(items[0].filterText).toBe('bash-lsp/bash-language-server')
+      expect(items[0].filterText).toBe('carapace-sh/bash-language-server')
     })
 
     it('does not create text edit when current word does not match prefix and display equals value', () => {

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "5.7.0",
+  "version": "0.0.0",
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules",
     "build": "cd server && bun build --compile --target node --outfile bash-language-server src/cli.ts",
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bash-lsp/bash-language-server.git"
+    "url": "git+https://github.com/carapace-sh/bash-language-server.git"
   },
   "jest": {
     "preset": "ts-jest",
