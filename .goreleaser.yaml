@@ -20,7 +20,7 @@ builds:
     main: ./src/cli.ts
     binary: bash-language-server
     env:
-      - VERSION={{.Version}}
+      - VERSION="{{.Version}}"
     targets:
       - linux-x64
       - linux-arm64
