@@ -23,15 +23,23 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Upgrade tree-sitter wasm
-        run: bash scripts/upgrade-tree-sitter.sh
+        run: |
+          set -euox pipefail
+          cd server
+          bun add web-tree-sitter
+          bun add --dev tree-sitter-cli https://github.com/tree-sitter/tree-sitter-bash
+          npx tree-sitter build --wasm node_modules/tree-sitter-bash
+          curl 'https://api.github.com/repos/tree-sitter/tree-sitter-bash/commits/master' | jq .commit.url > parser.info
+          echo "tree-sitter-cli $(cat package.json | jq '.devDependencies["tree-sitter-cli"]')" >> parser.info
+          bun remove tree-sitter-cli tree-sitter-bash
 
       - name: Verify file changes
         uses: tj-actions/verify-changed-files@v17
         id: verify-changed-files
         with:
           files: |
-             server/parser.info
-             server/tree-sitter-bash.wasm
+            server/parser.info
+            server/tree-sitter-bash.wasm
 
       - name: Create pull request
         if: steps.verify-changed-files.outputs.files_changed == 'true'
