@@ -28,5 +28,4 @@ builds:
     hooks:
       pre:
         - bun install
-        - bun run compile
-        - bun run build:bundle
+        - bun run build
