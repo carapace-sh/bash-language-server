@@ -24,4 +24,4 @@ jobs:
       - run: bun install
 
       - name: Verify changes
-        run: bun verify:bail
+        run: bun run verify:bail
