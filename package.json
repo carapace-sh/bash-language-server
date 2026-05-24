@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules",
-    "build": "cd server && bun build --compile --target node --outfile bash-language-server src/cli.ts",
     "test": "bun test --isolate",
     "test:coverage": "bun test --isolate --coverage"
   },

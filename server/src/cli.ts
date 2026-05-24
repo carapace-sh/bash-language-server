@@ -5,7 +5,8 @@ import * as LSP from 'vscode-languageserver/node'
 import BashServer from './server'
 import { DEFAULT_LOG_LEVEL, LOG_LEVEL_ENV_VAR } from './util/logger'
 
-const VERSION = process.env.VERSION ?? "0.0.0"
+
+declare const BUILD_VERSION: string;
 const REPOSITORY_URL = "https://github.com/carapace-sh/bash-language-server"
 
 const PADDING = 38
@@ -41,7 +42,7 @@ export function runCli() {
   if (start) {
     listen()
   } else if (version) {
-    console.log(VERSION)
+    console.log(BUILD_VERSION)
   } else if (help) {
     printHelp()
   } else {
