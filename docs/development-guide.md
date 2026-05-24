@@ -28,7 +28,7 @@ To make sure that everything is configured correctly run the following command
 to compile the server
 
 ```
-bun compile
+bun build
 ```
 
 ## Testing
@@ -39,7 +39,7 @@ If you are working on the server, then simply compile
 and install the server globally whenever you've made a change.
 
 ```
-bun reinstall-server
+bun build && bun install
 ```
 
 If you for some reason cannot get access to logs through the client,

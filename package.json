@@ -2,16 +2,9 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules server/node_modules",
-    "compile": "bash scripts/compile.sh",
-    "build:bundle": "cd server && bun build --compile --target node --outfile bash-language-server out/cli.js",
-    "watch": "bash scripts/watch.sh",
+    "build": "cd server && bun build --compile --target node --outfile bash-language-server out/cli.js",
     "test": "bun test --isolate",
-    "test:coverage": "bun test --isolate --coverage",
-    "test:watch": "bun run test --watch",
-    "verify": "bun run compile && bun run test",
-    "reinstall-server": "bun pm uninstall -g bash-language-server && bun run compile && bun pm install -g ./server",
-    "link-server": "bun pm uninstall -g bash-language-server && bun run compile && bun pm link ./server",
-    "postinstall": "bun install --cwd server"
+    "test:coverage": "bun test --isolate --coverage"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",

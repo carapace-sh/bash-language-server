@@ -29,8 +29,7 @@
   },
   "scripts": {
     "prepublishOnly": "cp README.md ../server/",
-    "prebuild:wasm": "bash scripts/encode-wasm.sh",
-    "build:bundle": "bun run prebuild:wasm && bun build --compile --target node --outfile bash-language-server out/cli.js"
+    "build": "bun build --compile --target node --outfile bash-language-server out/cli.js"
   },
   "devDependencies": {
     "@types/fuzzy-search": "2.1.5",
