@@ -29,7 +29,7 @@
   },
   "scripts": {
     "prepublishOnly": "cp README.md ../server/",
-    "build": "bun build --compile --target node --outfile bash-language-server out/cli.js"
+    "build": "bun build --compile --target node --outfile bash-language-server src/cli.ts"
   },
   "devDependencies": {
     "@types/fuzzy-search": "2.1.5",

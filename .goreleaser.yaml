@@ -17,7 +17,7 @@ builds:
     builder: bun
     command: build
     dir: server
-    main: ./out/cli.js
+    main: ./src/cli.ts
     binary: bash-language-server
     targets:
       - linux-x64
