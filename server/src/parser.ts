@@ -4,7 +4,6 @@ const _global: any = global
 
 // Embedded tree-sitter.wasm (core runtime, base64 encoded)
 import { TREE_SITTER_WASM_BASE64 } from './tree-sitter'
-
 // Embedded tree-sitter-bash.wasm (language grammar, base64 encoded)
 import { TREE_SITTER_BASH_WASM_BASE64 } from './tree-sitter-bash'
 
