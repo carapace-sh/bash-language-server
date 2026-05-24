@@ -1,4 +1,4 @@
-import * as Parser from 'web-tree-sitter'
+import Parser from 'web-tree-sitter'
 
 const _global: any = global
 
