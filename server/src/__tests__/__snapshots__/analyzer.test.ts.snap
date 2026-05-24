@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`findReferences returns a list of locations if parameter is found 1`] = `
 [
@@ -53,82 +53,6 @@ exports[`findReferences returns a list of locations if parameter is found 1`] = 
       },
     },
     "uri": "dummy-uri.sh",
-  },
-]
-`;
-
-exports[`getDeclarationsForUri issue 101 1`] = `
-[
-  {
-    "kind": 12,
-    "location": {
-      "range": {
-        "end": {
-          "character": 1,
-          "line": 14,
-        },
-        "start": {
-          "character": 0,
-          "line": 3,
-        },
-      },
-      "uri": "dummy-uri.sh",
-    },
-    "name": "add_a_user",
-  },
-  {
-    "containerName": "add_a_user",
-    "kind": 13,
-    "location": {
-      "range": {
-        "end": {
-          "character": 9,
-          "line": 5,
-        },
-        "start": {
-          "character": 2,
-          "line": 5,
-        },
-      },
-      "uri": "dummy-uri.sh",
-    },
-    "name": "USER",
-  },
-  {
-    "containerName": "add_a_user",
-    "kind": 13,
-    "location": {
-      "range": {
-        "end": {
-          "character": 13,
-          "line": 6,
-        },
-        "start": {
-          "character": 2,
-          "line": 6,
-        },
-      },
-      "uri": "dummy-uri.sh",
-    },
-    "name": "PASSWORD",
-  },
-  {
-    "containerName": "add_a_user",
-    "kind": 13,
-    "location": {
-      "range": {
-        "end": {
-          "character": 13,
-          "line": 9,
-        },
-        "start": {
-          "character": 2,
-          "line": 9,
-        },
-      },
-      "uri": "dummy-uri.sh",
-    },
-    "name": "COMMENTS",
   },
 ]
 `;
@@ -950,6 +874,82 @@ exports[`getDeclarationsForUri returns a list of SymbolInformation if uri is fou
       "uri": "dummy-uri.sh",
     },
     "name": "FILE_PATH_EXPANSION",
+  },
+]
+`;
+
+exports[`getDeclarationsForUri issue 101 1`] = `
+[
+  {
+    "kind": 12,
+    "location": {
+      "range": {
+        "end": {
+          "character": 1,
+          "line": 14,
+        },
+        "start": {
+          "character": 0,
+          "line": 3,
+        },
+      },
+      "uri": "dummy-uri.sh",
+    },
+    "name": "add_a_user",
+  },
+  {
+    "containerName": "add_a_user",
+    "kind": 13,
+    "location": {
+      "range": {
+        "end": {
+          "character": 9,
+          "line": 5,
+        },
+        "start": {
+          "character": 2,
+          "line": 5,
+        },
+      },
+      "uri": "dummy-uri.sh",
+    },
+    "name": "USER",
+  },
+  {
+    "containerName": "add_a_user",
+    "kind": 13,
+    "location": {
+      "range": {
+        "end": {
+          "character": 13,
+          "line": 6,
+        },
+        "start": {
+          "character": 2,
+          "line": 6,
+        },
+      },
+      "uri": "dummy-uri.sh",
+    },
+    "name": "PASSWORD",
+  },
+  {
+    "containerName": "add_a_user",
+    "kind": 13,
+    "location": {
+      "range": {
+        "end": {
+          "character": 13,
+          "line": 9,
+        },
+        "start": {
+          "character": 2,
+          "line": 9,
+        },
+      },
+      "uri": "dummy-uri.sh",
+    },
+    "name": "COMMENTS",
   },
 ]
 `;

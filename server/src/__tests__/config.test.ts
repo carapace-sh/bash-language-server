@@ -6,6 +6,7 @@ describe('ConfigSchema', () => {
     expect(ConfigSchema.parse({})).toMatchInlineSnapshot(`
       {
         "backgroundAnalysisMaxFiles": 500,
+        "carapacePath": "carapace",
         "enableSourceErrorDiagnostics": false,
         "explainshellEndpoint": "",
         "globPattern": "**/*@(.sh|.inc|.bash|.command)",
@@ -52,6 +53,7 @@ describe('ConfigSchema', () => {
     ).toMatchInlineSnapshot(`
       {
         "backgroundAnalysisMaxFiles": 1,
+        "carapacePath": "carapace",
         "enableSourceErrorDiagnostics": false,
         "explainshellEndpoint": "localhost:8080",
         "globPattern": "**/*@(.sh)",
@@ -95,6 +97,7 @@ describe('getConfigFromEnvironmentVariables', () => {
     expect(config).toMatchInlineSnapshot(`
       {
         "backgroundAnalysisMaxFiles": 500,
+        "carapacePath": "carapace",
         "enableSourceErrorDiagnostics": false,
         "explainshellEndpoint": "",
         "globPattern": "**/*@(.sh|.inc|.bash|.command)",
@@ -127,6 +130,7 @@ describe('getConfigFromEnvironmentVariables', () => {
     expect(config).toMatchInlineSnapshot(`
       {
         "backgroundAnalysisMaxFiles": 500,
+        "carapacePath": "carapace",
         "enableSourceErrorDiagnostics": false,
         "explainshellEndpoint": "",
         "globPattern": "**/*@(.sh|.inc|.bash|.command)",
@@ -165,6 +169,7 @@ describe('getConfigFromEnvironmentVariables', () => {
     expect(config).toMatchInlineSnapshot(`
       {
         "backgroundAnalysisMaxFiles": 1,
+        "carapacePath": "carapace",
         "enableSourceErrorDiagnostics": false,
         "explainshellEndpoint": "localhost:8080",
         "globPattern": "*.*",

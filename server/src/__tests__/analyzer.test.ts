@@ -102,14 +102,16 @@ describe('analyze', () => {
     expect(diagnostics).toMatchInlineSnapshot(`
       [
         {
-          "message": "Source command could not be analyzed: non-constant source not supported.
+          "message": 
+      "Source command could not be analyzed: non-constant source not supported.
 
       Consider adding a ShellCheck directive above this line to fix or ignore this:
       # shellcheck source=/my-file.sh # specify the file to source
       # shellcheck source-path=my_script_folder # specify the folder to search in
       # shellcheck source=/dev/null # to ignore the error
 
-      Disable this message by changing the configuration option "enableSourceErrorDiagnostics"",
+      Disable this message by changing the configuration option "enableSourceErrorDiagnostics""
+      ,
           "range": {
             "end": {
               "character": 16,
@@ -124,14 +126,16 @@ describe('analyze', () => {
           "source": "bash-language-server",
         },
         {
-          "message": "Source command could not be analyzed: failed to resolve path.
+          "message": 
+      "Source command could not be analyzed: failed to resolve path.
 
       Consider adding a ShellCheck directive above this line to fix or ignore this:
       # shellcheck source=/my-file.sh # specify the file to source
       # shellcheck source-path=my_script_folder # specify the folder to search in
       # shellcheck source=/dev/null # to ignore the error
 
-      Disable this message by changing the configuration option "enableSourceErrorDiagnostics"",
+      Disable this message by changing the configuration option "enableSourceErrorDiagnostics""
+      ,
           "range": {
             "end": {
               "character": 49,

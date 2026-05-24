@@ -21,6 +21,10 @@ jest.spyOn(console, 'warn').mockImplementation(() => {
   // noop
 })
 
+afterEach(() => {
+  jest.clearAllMocks()
+})
+
 describe('Logger', () => {
   it('logs simple message', () => {
     const logger = new Logger()
