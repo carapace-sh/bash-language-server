@@ -43,13 +43,13 @@ jobs:
       - name: Determine output filename
         if: runner.os == 'Windows'
         run: |
-          echo "ASSET_NAME=bash-language-server-${{ matrix.architecture.arch }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "ASSET_NAME=bash-language-server-${{ matrix.platform.os }}-${{ matrix.architecture.arch }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "BINARY_NAME=bash-language-server.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Determine output filename
         if: runner.os != 'Windows'
         run: |
-          echo "ASSET_NAME=bash-language-server-${{ matrix.architecture.arch }}" >> $GITHUB_ENV
+          echo "ASSET_NAME=bash-language-server-${{ matrix.platform.os }}-${{ matrix.architecture.arch }}" >> $GITHUB_ENV
           echo "BINARY_NAME=bash-language-server" >> $GITHUB_ENV
 
       - name: Upload artifact
