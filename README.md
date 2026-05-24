@@ -1,3 +1,6 @@
+> Experimental proof-of-concept [fork](https://github.com/bash-lsp/bash-language-server) with added support for [carapace](https://github.com/carapace-sh/carapace-bin).
+> This is fully generated with a clanker.
+
 # Bash Language Server
 
 Bash language server that brings an IDE-like experience for bash scripts to most editors. This is based on the [Tree Sitter parser][tree-sitter-bash] and supports [explainshell][explainshell], [shellcheck][shellcheck], [shfmt][shfmt] and [carapace][carapace].
