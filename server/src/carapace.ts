@@ -110,7 +110,7 @@ export class CarapaceProvider {
         (completion.value.startsWith(currentWord) || hasDisplay)
       ) {
         item.textEdit = {
-          newText: completion.value,
+          newText: quoteShellValue(completion.value),
           range: {
             start: {
               character: params.position.character - currentWord.length,
@@ -123,11 +123,11 @@ export class CarapaceProvider {
           },
         }
       } else if (hasDisplay) {
-        item.insertText = completion.value
+        item.insertText = quoteShellValue(completion.value)
       } else if (currentWord === '' || isSingleOperator) {
         // Empty word or single operator case - insert at cursor position
         item.textEdit = {
-          newText: completion.value,
+          newText: quoteShellValue(completion.value),
           range: {
             start: {
               character: params.position.character,
@@ -174,4 +174,14 @@ function carapaceTagToCompletionKind(tag?: string): LSP.CompletionItemKind {
   }
 
   return LSP.CompletionItemKind.Text
+}
+
+function quoteShellValue(value: string): string {
+  // If value is empty or contains only safe characters, return as-is
+  if (value === '' || /^[a-zA-Z0-9._+-/=:@%]+$/.test(value)) {
+    return value
+  }
+
+  // Use single quotes to preserve value literally, escape any existing single quotes
+  return "'" + value.replace(/'/g, "'\\''") + "'"
 }

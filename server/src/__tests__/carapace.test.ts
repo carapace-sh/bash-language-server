@@ -295,5 +295,36 @@ describe('CarapaceProvider', () => {
       // Text for no tag
       expect(items[5].kind).toBe(1) // CompletionItemKind.Text
     })
+
+    it('quotes values with spaces or special characters', () => {
+      const provider = new CarapaceProvider({ executablePath: 'carapace' })
+      const params = {
+        textDocument: { uri: 'file:///test.sh' },
+        position: { line: 0, character: 0 },
+      }
+
+      const items = provider.toCompletionItems(
+        [
+          { value: 'hello world' }, // space - should be quoted
+          { value: "it's cool" }, // space and single quote - should be quoted with escaped quotes
+          { value: 'file$name.txt' }, // special char $ - should be quoted
+          { value: 'simple' }, // safe chars - no quoting needed
+        ],
+        '',
+        params,
+      )
+
+      expect(items[0].textEdit).toBeDefined()
+      expect((items[0].textEdit as LSP.TextEdit).newText).toBe("'hello world'")
+
+      expect(items[1].textEdit).toBeDefined()
+      expect((items[1].textEdit as LSP.TextEdit).newText).toBe("'it'\\''s cool'")
+
+      expect(items[2].textEdit).toBeDefined()
+      expect((items[2].textEdit as LSP.TextEdit).newText).toBe("'file$name.txt'")
+
+      expect(items[3].textEdit).toBeDefined()
+      expect((items[3].textEdit as LSP.TextEdit).newText).toBe('simple')
+    })
   })
 })
