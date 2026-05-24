@@ -1,4 +1,5 @@
 // Auto-generated from get-options.sh
+/* eslint-disable no-useless-escape */
 export const GET_OPTIONS_SCRIPT = `#!/usr/bin/env bash
 
 # Try and get COMPLETIONSRC using pkg-config

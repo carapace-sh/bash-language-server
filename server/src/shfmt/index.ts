@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
 import { existsSync, readFileSync } from 'fs'
-import { dirname, join, resolve as resolvePath } from 'path'
+import { dirname, join } from 'path'
 import * as EditorConfig from 'tiny-editorconfig'
 import * as LSP from 'vscode-languageserver/node'
 import { DocumentUri, TextDocument, TextEdit } from 'vscode-languageserver-textdocument'
@@ -189,6 +189,7 @@ export class Formatter {
 
 async function parseEditorConfig(filepath: string): Promise<Record<string, any>> {
   let dir = dirname(filepath)
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const configPath = join(dir, '.editorconfig')
     if (existsSync(configPath)) {
