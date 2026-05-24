@@ -196,7 +196,6 @@ describe('getSourcedUris', () => {
 
     expect(sourcedUris).toEqual(
       new Set([
-        `file://${REPO_ROOT_FOLDER}/scripts/release-client.sh`,
         `file://${REPO_ROOT_FOLDER}/testing/fixtures/issue206.sh`,
         `file://${REPO_ROOT_FOLDER}/testing/fixtures/missing-node.sh`,
         `file://${REPO_ROOT_FOLDER}/testing/fixtures/install.sh`,
@@ -213,6 +212,10 @@ describe('getSourcedUris', () => {
         })),
     ).toMatchInlineSnapshot(`
       [
+        {
+          "error": "failed to resolve path",
+          "line": 1,
+        },
         {
           "error": "failed to resolve path",
           "line": 15,

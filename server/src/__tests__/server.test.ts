@@ -26,6 +26,10 @@ jest.spyOn(Logger.prototype, 'log').mockImplementation(() => {
   // noop
 })
 
+Object.defineProperty(process, 'env', {
+  value: { ...process.env, PATH: process.env.PATH || '/usr/bin:/bin' },
+})
+
 async function initializeServer({
   capabilities,
   configurationObject,

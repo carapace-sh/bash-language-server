@@ -1083,21 +1083,6 @@ exports[`server onRenameRequest Workspace-wide rename returns correct WorkspaceE
 exports[`server onRenameRequest Workspace-wide rename returns correct WorkspaceEdits for sourced symbols 2`] = `
 {
   "changes": {
-    "file://__REPO_ROOT_FOLDER__/scripts/release-client.sh": [
-      {
-        "newText": "newName",
-        "range": {
-          "end": {
-            "character": 10,
-            "line": 16,
-          },
-          "start": {
-            "character": 0,
-            "line": 16,
-          },
-        },
-      },
-    ],
     "file://__REPO_ROOT_FOLDER__/scripts/release-server.sh": [
       {
         "newText": "newName",

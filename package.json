@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "clean": "rm -rf *.log */*.log */out node_modules vscode-client/node_modules server/node_modules",
+    "clean": "rm -rf *.log */*.log */out node_modules server/node_modules",
     "compile": "tsc -b && cp server/src/get-options.sh server/out/",
     "build:bundle": "cd server && bun build --compile --target node --outfile bash-language-server out/cli.js",
     "watch": "tsc -b -w",
@@ -13,8 +13,8 @@
     "verify": "bun run lint && bun run compile && bun run test",
     "verify:bail": "bun run lint:bail && bun run compile && bun run test:coverage",
     "reinstall-server": "bun pm uninstall -g bash-language-server && bun run compile && bun pm install -g ./server",
-    "link-server": "bun pm uninstall -g bash-language-server && bun run compile && bun run unlink --dir=vscode-client bash-language-server && cd server && bun pm link . && cd ../vscode-client && bun pm link bash-language-server",
-    "postinstall": "bun install --cwd server && bun install --cwd vscode-client"
+    "link-server": "bun pm uninstall -g bash-language-server && bun run compile && bun pm link ./server",
+    "postinstall": "bun install --cwd server"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
@@ -52,8 +52,7 @@
       "ts"
     ],
     "modulePathIgnorePatterns": [
-      "<rootDir>/server/out",
-      "<rootDir>/vscode-client/out"
+      "<rootDir>/server/out"
     ],
     "transform": {
       "\\.ts$": [
