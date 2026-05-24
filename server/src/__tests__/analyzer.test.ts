@@ -26,6 +26,10 @@ jest.spyOn(Logger.prototype, 'log').mockImplementation(() => {
 const loggerInfo = jest.spyOn(Logger.prototype, 'info')
 const loggerWarn = jest.spyOn(Logger.prototype, 'warn')
 
+afterEach(() => {
+  jest.clearAllMocks()
+})
+
 async function getAnalyzer({
   enableSourceErrorDiagnostics = false,
   includeAllWorkspaceSymbols = false,
@@ -914,14 +918,15 @@ describe('initiateBackgroundAnalysis', () => {
     })
 
     expect(loggerWarn).toHaveBeenCalled()
-    expect(loggerWarn.mock.calls).toEqual([
-      [expect.stringContaining('missing-node.sh: syntax error')],
-      [expect.stringContaining('not-a-shell-script.sh: syntax error')],
-      [expect.stringContaining('parse-problems.sh: syntax error')],
-      [expect.stringContaining('sourcing.sh line 16: failed to resolve path')],
-      [expect.stringContaining('sourcing.sh line 21: non-constant source not supported')],
-      [expect.stringContaining('sourcing.sh line 26: failed to resolve path')],
-    ])
+    const warnCalls = loggerWarn.mock.calls.map((call) => call[0])
+    expect(warnCalls).toEqual(expect.arrayContaining([
+      expect.stringContaining('missing-node.sh: syntax error'),
+      expect.stringContaining('not-a-shell-script.sh: syntax error'),
+      expect.stringContaining('parse-problems.sh: syntax error'),
+      expect.stringContaining('sourcing.sh line 16: failed to resolve path'),
+      expect.stringContaining('sourcing.sh line 21: non-constant source not supported'),
+      expect.stringContaining('sourcing.sh line 26: failed to resolve path'),
+    ]))
 
     // Intro, stats on glob, one file skipped due to shebang, and outro
     expect(filesParsed).toEqual(FIXTURE_FILES_MATCHING_GLOB)

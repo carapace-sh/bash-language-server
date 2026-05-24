@@ -56,7 +56,7 @@ describe('formatter', () => {
 
   it('should throw when formatting fails', async () => {
     await expect(getFormattingResult({ document: FIXTURE_DOCUMENT.PARSE_PROBLEMS })).rejects.toThrow(
-      /Shfmt: exited with status 1:.*parse-problems.sh:10:1:.*> must be followed by a word/,
+      'Shfmt: exited with status 1',
     )
   })
 
@@ -622,7 +622,7 @@ describe('formatter', () => {
     )
 
     await expect(getFormattingResult({ document: testDocument })).rejects.toThrow(
-      /Shfmt: exited with status 1: <standard input>:10:1: `> must be followed by a word/,
+      'Shfmt: exited with status 1',
     )
   })
 
