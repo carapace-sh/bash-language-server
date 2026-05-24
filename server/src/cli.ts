@@ -5,7 +5,8 @@ import * as LSP from 'vscode-languageserver/node'
 import BashServer from './server'
 import { DEFAULT_LOG_LEVEL, LOG_LEVEL_ENV_VAR } from './util/logger'
 
-const packageJson = require('../package')
+const VERSION = "5.7.0"
+const REPOSITORY_URL = "https://github.com/bash-lsp/bash-language-server"
 
 const PADDING = 38
 
@@ -27,7 +28,7 @@ ${Object.entries(commandsAndFlags)
 Environment variables:
   ${LOG_LEVEL_ENV_VAR.padEnd(PADDING)} Set the log level (default: ${DEFAULT_LOG_LEVEL})
 
-Further documentation: ${packageJson.repository.url}`)
+Further documentation: ${REPOSITORY_URL}`)
 }
 
 export function runCli() {
@@ -40,7 +41,7 @@ export function runCli() {
   if (start) {
     listen()
   } else if (version) {
-    console.log(packageJson.version)
+    console.log(VERSION)
   } else if (help) {
     printHelp()
   } else {
