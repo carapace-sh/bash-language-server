@@ -12,8 +12,8 @@
     "test:watch": "bun run test --watch",
     "verify": "bun run lint && bun run compile && bun run test",
     "verify:bail": "bun run lint:bail && bun run compile && bun run test:coverage",
-    "reinstall-server": "npm uninstall -g bash-language-server && bun run compile && npm i -g ./server",
-    "link-server": "npm uninstall -g bash-language-server && bun run compile && bun run unlink --dir=vscode-client bash-language-server && cd server && npm link . && cd ../vscode-client && npm link bash-language-server",
+    "reinstall-server": "bun pm uninstall -g bash-language-server && bun run compile && bun pm install -g ./server",
+    "link-server": "bun pm uninstall -g bash-language-server && bun run compile && bun run unlink --dir=vscode-client bash-language-server && cd server && bun pm link . && cd ../vscode-client && bun pm link bash-language-server",
     "postinstall": "bun install --cwd server && bun install --cwd vscode-client"
   },
   "devDependencies": {
