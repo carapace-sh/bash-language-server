@@ -31,14 +31,7 @@ to compile the server
 bun compile
 ```
 
-## Development Tools
-
-To support a good develop workflow we set up [eslint][eslint], [Prettier][prettier] and integration tests using [Jest][jest]:
-
-    bun verify  # (runs lint, prettier and tests)
-    bun lint
-    bun test
-    bun test:coverage
+## Testing
 
 ## Working on the server
 
@@ -72,7 +65,5 @@ To analyze the performance of the server using the Chrome inspector:
 
 [lsp]: https://microsoft.github.io/language-server-protocol/
 [jest]: https://facebook.github.io/jest/
-[prettier]: https://prettier.io/
-[eslint]: https://eslint.org/
 [bun]: https://bun.sh
 [node]: https://nodejs.org/en/download/
