@@ -4,7 +4,9 @@
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules",
     "test": "bun test --isolate",
-    "test:coverage": "bun test --isolate --coverage"
+    "test:coverage": "bun test --isolate --coverage",
+    "verify": "bun test --isolate",
+    "verify:bail": "bun test --isolate --bail"
   },
   "devDependencies": {
     "@types/fuzzy-search": "2.1.5",
@@ -14,7 +16,6 @@
     "@types/turndown": "5.0.6",
     "@types/urijs": "1.19.26",
     "jest": "29.7.0",
-    "tiny-editorconfig": "^1.0.2",
     "ts-jest": "29.4.5",
     "vscode-languageserver": "8.0.2",
     "vscode-languageserver-textdocument": "1.0.12"
@@ -68,6 +69,7 @@
     "fast-glob": "3.3.3",
     "fuzzy-search": "3.2.1",
     "node-fetch": "2.7.0",
+    "tiny-editorconfig": "^1.0.2",
     "turndown": "7.2.2",
     "web-tree-sitter": "0.23.0",
     "zod": "3.25.76"
