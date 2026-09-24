@@ -4,7 +4,9 @@
   "scripts": {
     "clean": "rm -rf *.log */*.log */out node_modules",
     "test": "bun test --isolate",
-    "test:coverage": "bun test --isolate --coverage"
+    "test:coverage": "bun test --isolate --coverage",
+    "verify": "bun test --isolate",
+    "verify:bail": "bun test --isolate --bail"
   },
   "devDependencies": {
     "@types/fuzzy-search": "2.1.5",
