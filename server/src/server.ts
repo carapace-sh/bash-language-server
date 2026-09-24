@@ -552,9 +552,13 @@ export default class BashServer {
 
     if (commandContext) {
       if (this.carapaceProvider) {
+        // commandContextAtPoint returns only the *complete* arguments before the
+        // cursor. Append the current word (or '' at a word boundary) as the
+        // final argument so carapace completes the position the cursor is on.
+        const commandArguments = [...commandContext.args, word || '']
         const completions = this.carapaceProvider.getCompletions({
           commandName: commandContext.commandName,
-          commandArguments: commandContext.args,
+          commandArguments,
         })
         const carapaceItems = this.carapaceProvider.toCompletionItems(
           completions,

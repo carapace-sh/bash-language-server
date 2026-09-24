@@ -1,5 +1,7 @@
 import { pathToFileURL } from 'node:url'
 
+import { TextDocument } from 'vscode-languageserver-textdocument'
+
 import {
   FIXTURE_DOCUMENT,
   FIXTURE_FOLDER,
@@ -501,6 +503,42 @@ describe('commandContextAtPoint', () => {
     const context = analyzer.commandContextAtPoint(CURRENT_URI, 20, 7)
     expect(context).not.toBeNull()
     expect(context!.commandName).toBe('curl')
+  })
+
+  it('returns only complete arguments before the cursor, excluding the word being typed', async () => {
+    const analyzer = await getAnalyzer({})
+    const uri = 'partial.sh'
+    // "git checkout ma" with the cursor after "ma" (column 14 is the last char
+    // of "ma", matching the column-1 offset the server passes). "ma" is the
+    // word being completed and must NOT appear in args; the caller appends it.
+    analyzer.analyze({
+      uri,
+      document: TextDocument.create(uri, 'shellscript', 0, 'git checkout ma'),
+    })
+
+    const context = analyzer.commandContextAtPoint(uri, 0, 14)
+    expect(context).not.toBeNull()
+    expect(context!.commandName).toBe('git')
+    expect(context!.args).toEqual(['checkout'])
+  })
+
+  it('locates the command when the cursor is in trailing whitespace at end of line', async () => {
+    const analyzer = await getAnalyzer({})
+    const uri = 'boundary.sh'
+    // "git checkout " ends with a space; the cursor sits after it. tree-sitter
+    // leaves trailing whitespace outside the command node, so commandContextAtPoint
+    // must back up one column to find the command.
+    analyzer.analyze({
+      uri,
+      document: TextDocument.create(uri, 'shellscript', 0, 'git checkout '),
+    })
+
+    const context = analyzer.commandContextAtPoint(uri, 0, 12)
+    expect(context).not.toBeNull()
+    expect(context!.commandName).toBe('git')
+    // "checkout" is the only complete argument; the empty trailing word is
+    // appended by the caller (server.ts) from the LSP `word`, not here.
+    expect(context!.args).toEqual(['checkout'])
   })
 })
 

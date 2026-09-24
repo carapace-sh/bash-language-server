@@ -709,7 +709,13 @@ export default class Analyzer {
 
     const commandName = firstChild.text.trim()
 
-    // Collect all sibling nodes after the command_name that start before the cursor
+    // Collect the *complete* argument nodes that end at or before the cursor.
+    // The partial word currently being typed is not included here; it is
+    // appended by the caller (the LSP `word`) so that carapace receives the
+    // exact text the user has typed for the position being completed. Including
+    // the partial here was unreliable because the cursor column passed in is
+    // already offset by one (see onCompletion), which caused the previous
+    // complete word to be treated as the partial.
     const args: string[] = []
     const cursorPosition = { row: line, column }
 
@@ -724,11 +730,11 @@ export default class Analyzer {
         continue
       }
 
-      // Only include nodes that start before the cursor position
+      // Only include nodes that end at or before the cursor position
       if (
-        child.startPosition.row > cursorPosition.row ||
-        (child.startPosition.row === cursorPosition.row &&
-          child.startPosition.column >= cursorPosition.column)
+        child.endPosition.row > cursorPosition.row ||
+        (child.endPosition.row === cursorPosition.row &&
+          child.endPosition.column > cursorPosition.column)
       ) {
         continue
       }
@@ -743,44 +749,12 @@ export default class Analyzer {
       }
 
       // Skip empty or whitespace-only nodes
-      if (!child.text.trim()) {
+      const text = child.text.replace(/^['"]|['"]$/g, '').trim()
+      if (!text) {
         continue
       }
 
-      // For the node containing the cursor, use the text up to the cursor
-      const nodeStartsBeforeCursor =
-        child.startPosition.row < cursorPosition.row ||
-        (child.startPosition.row === cursorPosition.row &&
-          child.startPosition.column < cursorPosition.column)
-      const nodeEndsAtOrAfterCursor =
-        child.endPosition.row > cursorPosition.row ||
-        (child.endPosition.row === cursorPosition.row &&
-          child.endPosition.column >= cursorPosition.column)
-
-      if (nodeStartsBeforeCursor && nodeEndsAtOrAfterCursor) {
-        // Node contains cursor - use text up to cursor position
-        const offsetInNode =
-          (cursorPosition.row - child.startPosition.row) *
-            (child.endPosition.column > 0 ? child.endPosition.column : 0) +
-          cursorPosition.column -
-          child.startPosition.column
-        const partialText = child.text.substring(
-          0,
-          Math.min(offsetInNode, child.text.length),
-        )
-        // Strip leading/trailing quotes since they shouldn't be passed to carapace
-        const unquotedText = partialText.replace(/^['"]|['"]$/g, '')
-        if (unquotedText) {
-          args.push(unquotedText)
-        }
-      } else {
-        // Node is entirely before the cursor
-        // Strip leading/trailing quotes since they shouldn't be passed to carapace
-        const unquotedText = child.text.replace(/^['"]|['"]$/g, '')
-        if (unquotedText) {
-          args.push(unquotedText)
-        }
-      }
+      args.push(text)
     }
 
     return { commandName, args }
@@ -795,6 +769,21 @@ export default class Analyzer {
 
     while (node && node.type !== 'command') {
       node = node.parent
+    }
+
+    if (node) {
+      return node
+    }
+
+    // The cursor may sit in trailing whitespace at the end of a line where no
+    // command node covers the position (tree-sitter leaves trailing whitespace
+    // outside the command node). Retry one column back to locate the command.
+    if (column > 0) {
+      node = this.nodeAtPoint(uri, line, column - 1)
+
+      while (node && node.type !== 'command') {
+        node = node.parent
+      }
     }
 
     return node
