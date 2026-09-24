@@ -230,9 +230,10 @@ describe('CarapaceProvider', () => {
       expect(items[0].filterText).toBe('--verbose')
       expect(items[0].insertText).toBe('--verbose')
       expect(items[0].documentation).toBe('Verbose output')
-      // no display: label is value, no filterText or insertText override
+      // no display: label is value; filterText is always set so the server's
+      // generic word filter does not drop carapace items on quoted prefixes.
       expect(items[1].label).toBe('--help')
-      expect(items[1].filterText).toBeUndefined()
+      expect(items[1].filterText).toBe('--help')
       expect(items[1].insertText).toBeUndefined()
     })
 

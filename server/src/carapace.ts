@@ -95,9 +95,12 @@ export class CarapaceProvider {
         item.documentation = completion.description
       }
 
-      if (hasDisplay) {
-        item.filterText = completion.value
-      }
+      // carapace already prefix-matches the partial internally, so every item
+      // is relevant. Set filterText unconditionally so the server's generic
+      // word filter (which compares the raw, possibly quote-prefixed, current
+      // word against `label`) does not drop carapace items when the user typed
+      // a leading quote (e.g. `'ma`) that is not present in the unquoted label.
+      item.filterText = completion.value
 
       // Detect single operator characters (like '=') that tree-sitter parses as separate words
       // but should not affect completion filtering - bash treats --option= as one word
