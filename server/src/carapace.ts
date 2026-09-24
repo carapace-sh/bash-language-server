@@ -127,7 +127,6 @@ export class CarapaceProvider {
       const item: LSP.CompletionItem = {
         label,
         kind: carapaceTagToCompletionKind(completion.tag),
-        data: { type: 'carapace' },
       }
 
       if (completion.description) {
