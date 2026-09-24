@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
 
 import * as LSP from 'vscode-languageserver/node'
 
@@ -20,6 +20,12 @@ export interface CarapaceResponse {
 
 const MAX_CONSECUTIVE_SPAWN_ERRORS = 3
 
+// Capture the real timers at module load so the spawn timeout cannot be
+// short-circuited by unrelated `setTimeout` spies (e.g. the shellcheck debounce
+// mock in the server tests, which fires scheduled callbacks synchronously).
+const realSetTimeout: typeof setTimeout = setTimeout
+const realClearTimeout: typeof clearTimeout = clearTimeout
+
 export class CarapaceProvider {
   private executablePath: string
   private consecutiveSpawnErrors = 0
@@ -28,13 +34,13 @@ export class CarapaceProvider {
     this.executablePath = executablePath
   }
 
-  public getCompletions({
+  public async getCompletions({
     commandName,
     commandArguments,
   }: {
     commandName: string
     commandArguments: string[]
-  }): CarapaceCompletion[] {
+  }): Promise<CarapaceCompletion[]> {
     if (
       !this.executablePath ||
       this.consecutiveSpawnErrors >= MAX_CONSECUTIVE_SPAWN_ERRORS
@@ -42,39 +48,72 @@ export class CarapaceProvider {
       return []
     }
 
-    try {
-      const args = [commandName, 'export', commandName, ...commandArguments]
-      logger.debug(`CarapaceProvider: spawning ${this.executablePath} ${args.join(' ')}`)
+    const args = [commandName, 'export', commandName, ...commandArguments]
+    logger.debug(`CarapaceProvider: spawning ${this.executablePath} ${args.join(' ')}`)
 
-      const result = spawnSync(this.executablePath, args, {
-        timeout: 5000,
+    return new Promise((resolve) => {
+      let stdout = ''
+      let spawnErrored = false
+      let timedOut = false
+
+      const child = spawn(this.executablePath, args, {
         stdio: ['pipe', 'pipe', 'pipe'],
       })
 
-      if (result.status !== 0) {
-        if (result.error) {
-          this.consecutiveSpawnErrors++
-          logger.debug(
-            `CarapaceProvider: spawn failed (${this.consecutiveSpawnErrors}/${MAX_CONSECUTIVE_SPAWN_ERRORS}): ${result.error.message}`,
-          )
+      const timer = realSetTimeout(() => {
+        timedOut = true
+        child.kill()
+      }, 5000)
+
+      child.stdout.on('data', (buffer: Buffer) => {
+        stdout += buffer.toString()
+      })
+
+      child.on('error', (error: Error) => {
+        // Spawn failure (e.g. binary missing). Counts toward disabling the
+        // provider; a non-zero exit without a spawn error does not.
+        spawnErrored = true
+        realClearTimeout(timer)
+        this.consecutiveSpawnErrors++
+        logger.debug(
+          `CarapaceProvider: spawn failed (${this.consecutiveSpawnErrors}/${MAX_CONSECUTIVE_SPAWN_ERRORS}): ${error.message}`,
+        )
+        resolve([])
+      })
+
+      child.on('close', (status: number | null) => {
+        realClearTimeout(timer)
+        if (spawnErrored) {
+          return
         }
-        return []
-      }
+        if (timedOut) {
+          logger.warn(`CarapaceProvider: timed out for ${commandName}`)
+          resolve([])
+          return
+        }
+        if (status !== 0) {
+          resolve([])
+          return
+        }
 
-      this.consecutiveSpawnErrors = 0
+        this.consecutiveSpawnErrors = 0
 
-      const stdout = result.stdout.toString().trim()
-      if (!stdout) {
-        return []
-      }
+        const trimmed = stdout.trim()
+        if (!trimmed) {
+          resolve([])
+          return
+        }
 
-      const response: CarapaceResponse = JSON.parse(stdout)
-      return response.values || []
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      logger.warn(`CarapaceProvider: failed to get completions: ${errorMessage}`)
-      return []
-    }
+        try {
+          const response: CarapaceResponse = JSON.parse(trimmed)
+          resolve(response.values || [])
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error)
+          logger.warn(`CarapaceProvider: failed to parse completions: ${errorMessage}`)
+          resolve([])
+        }
+      })
+    })
   }
 
   public toCompletionItems(

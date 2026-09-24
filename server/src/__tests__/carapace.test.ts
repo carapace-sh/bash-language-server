@@ -4,41 +4,40 @@ import { CarapaceProvider } from '../carapace'
 
 describe('CarapaceProvider', () => {
   describe('getCompletions', () => {
-    it('returns empty array when executable path is empty', () => {
+    it('returns empty array when executable path is empty', async () => {
       const provider = new CarapaceProvider({ executablePath: '' })
       expect(
-        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+        await provider.getCompletions({ commandName: 'git', commandArguments: [] }),
       ).toEqual([])
     })
 
-    it('disables itself after consecutive spawn failures', () => {
+    it('disables itself after consecutive spawn failures', async () => {
       const provider = new CarapaceProvider({ executablePath: 'nonexistent-binary' })
       // Should keep trying until MAX_CONSECUTIVE_SPAWN_ERRORS is reached
       expect(
-        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+        await provider.getCompletions({ commandName: 'git', commandArguments: [] }),
       ).toEqual([])
       expect(
-        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+        await provider.getCompletions({ commandName: 'git', commandArguments: [] }),
       ).toEqual([])
       expect(
-        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+        await provider.getCompletions({ commandName: 'git', commandArguments: [] }),
       ).toEqual([])
       // After 3 consecutive failures, should be disabled
       expect(
-        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+        await provider.getCompletions({ commandName: 'git', commandArguments: [] }),
       ).toEqual([])
     })
 
-    it('still returns completions after a non-error non-zero exit', () => {
-      const provider = new CarapaceProvider({ executablePath: 'nonexistent-binary' })
-      // First call fails with spawn error (ENOENT)
-      provider.getCompletions({ commandName: 'git', commandArguments: [] })
-      // The consecutive error count should be tracked
-      // But if carapace returns 0, the counter resets
-      // This test just verifies the provider doesn't permanently disable on first error
-      expect(
-        provider.getCompletions({ commandName: 'git', commandArguments: [] }),
-      ).toEqual([])
+    it('does not count a non-zero exit (without spawn error) toward disabling', async () => {
+      // `false` always exits 1 but spawns successfully, so it exercises the
+      // non-zero-exit branch which must NOT increment the spawn-error counter.
+      const provider = new CarapaceProvider({ executablePath: 'false' })
+      for (let i = 0; i < 5; i++) {
+        expect(
+          await provider.getCompletions({ commandName: 'git', commandArguments: [] }),
+        ).toEqual([])
+      }
     })
   })
 

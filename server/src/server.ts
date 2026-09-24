@@ -442,7 +442,9 @@ export default class BashServer {
     return codeActions
   }
 
-  private onCompletion(params: LSP.TextDocumentPositionParams): BashCompletionItem[] {
+  private async onCompletion(
+    params: LSP.TextDocumentPositionParams,
+  ): Promise<BashCompletionItem[]> {
     const word = this.analyzer.wordAtPointFromTextPosition({
       ...params,
       position: {
@@ -556,7 +558,7 @@ export default class BashServer {
         // cursor. Append the current word (or '' at a word boundary) as the
         // final argument so carapace completes the position the cursor is on.
         const commandArguments = [...commandContext.args, word || '']
-        const completions = this.carapaceProvider.getCompletions({
+        const completions = await this.carapaceProvider.getCompletions({
           commandName: commandContext.commandName,
           commandArguments,
         })

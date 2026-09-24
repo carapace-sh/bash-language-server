@@ -338,6 +338,7 @@ describe('server', () => {
               type: CompletionItemDataType.Symbol,
             },
             documentation: expect.any(String),
+            filterText: '--line-buffered',
             kind: expect.any(Number),
             label: '--line-buffered',
             textEdit: {
